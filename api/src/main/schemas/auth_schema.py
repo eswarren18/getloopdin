@@ -25,5 +25,5 @@ class TokenData(BaseModel):
     Represents the data extracted from a JWT token (e.g., for validation).
     """
 
-    username: Optional[str] = None
     role: Optional[str] = None
+    username: Optional[str] = None

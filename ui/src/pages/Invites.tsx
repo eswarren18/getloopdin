@@ -91,7 +91,12 @@ export default function Invites() {
                                         {invite.event.description}
                                     </td>
                                     <td className="py-2 px-4 border-l border-gray-200">
-                                        {invite.event.hostName}
+                                        {invite.event.hosts &&
+                                        Array.isArray(invite.event.hosts)
+                                            ? invite.event.hosts.map(
+                                                  (host) => host.name
+                                              )
+                                            : ''}
                                     </td>
                                     <td className="py-2 px-4 border-l border-gray-200">
                                         {invite.role}

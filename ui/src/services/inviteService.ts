@@ -49,8 +49,12 @@ export async function createInvite(
             event: {
                 description: data.event.description,
                 endTime: data.event.end_time,
-                hostId: data.event.host_id,
-                hostName: data.event.host_name,
+                hosts: Array.isArray(data.event.hosts)
+                    ? data.event.hosts.map((host: any) => ({
+                          id: host.id,
+                          name: host.name,
+                      }))
+                    : [],
                 id: data.event.id,
                 startTime: data.event.start_time,
                 title: data.event.title,
@@ -98,8 +102,12 @@ export async function fetchInvites(
             event: {
                 description: invite.event.description,
                 endTime: invite.event.end_time,
-                hostId: invite.event.host_id,
-                hostName: invite.event.host_name,
+                hosts: Array.isArray(invite.event.hosts)
+                    ? invite.event.hosts.map((host: any) => ({
+                          id: host.id,
+                          name: host.name,
+                      }))
+                    : [],
                 id: invite.event.id,
                 startTime: invite.event.start_time,
                 title: invite.event.title,
@@ -145,8 +153,12 @@ export async function respondToInvite(
             event: {
                 description: data.event.description,
                 endTime: data.event.end_time,
-                hostId: data.event.host_id,
-                hostName: data.event.host_name,
+                hosts: Array.isArray(data.event.hosts)
+                    ? data.event.hosts.map((host: any) => ({
+                          id: host.id,
+                          name: host.name,
+                      }))
+                    : [],
                 id: data.event.id,
                 startTime: data.event.start_time,
                 title: data.event.title,

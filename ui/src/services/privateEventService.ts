@@ -30,8 +30,12 @@ export async function fetchEvents(
             id: event.id,
             title: event.title,
             description: event.description,
-            hostId: event.host_id,
-            hostName: event.host_name,
+            hosts: Array.isArray(event.hosts)
+                ? event.hosts.map((host: any) => ({
+                      id: host.id,
+                      name: host.name,
+                  }))
+                : [],
             startTime: event.start_time,
             endTime: event.end_time,
         }));
@@ -75,8 +79,12 @@ export async function createEvent(
             id: data.id,
             title: data.title,
             description: data.description,
-            hostId: data.host_id,
-            hostName: data.host_name,
+            hosts: Array.isArray(data.hosts)
+                ? data.hosts.map((host: any) => ({
+                      id: host.id,
+                      name: host.name,
+                  }))
+                : [],
             startTime: data.start_time,
             endTime: data.end_time,
         };
@@ -89,6 +97,7 @@ export async function createEvent(
 export async function fetchEventById(
     eventId: number
 ): Promise<EventOut | Error> {
+    // Sent GET request to the API
     try {
         const response = await fetch(
             `${baseUrl}/api/private/events/${eventId}`,
@@ -112,8 +121,12 @@ export async function fetchEventById(
             id: data.id,
             title: data.title,
             description: data.description,
-            hostId: data.host_id,
-            hostName: data.host_name,
+            hosts: Array.isArray(data.hosts)
+                ? data.hosts.map((host: any) => ({
+                      id: host.id,
+                      name: host.name,
+                  }))
+                : [],
             startTime: data.start_time,
             endTime: data.end_time,
         };
@@ -163,8 +176,12 @@ export async function updateEvent(
             id: data.id,
             title: data.title,
             description: data.description,
-            hostId: data.host_id,
-            hostName: data.host_name,
+            hosts: Array.isArray(data.hosts)
+                ? data.hosts.map((host: any) => ({
+                      id: host.id,
+                      name: host.name,
+                  }))
+                : [],
             startTime: data.start_time,
             endTime: data.end_time,
         };

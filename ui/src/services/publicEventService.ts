@@ -8,6 +8,7 @@ if (!baseUrl) {
 export async function fetchEventByToken(
     token: string
 ): Promise<EventOut | Error> {
+    // Sent GET request to the API
     try {
         const response = await fetch(
             `${baseUrl}/api/public/events/token/${token}`,
@@ -31,8 +32,12 @@ export async function fetchEventByToken(
             id: data.id,
             title: data.title,
             description: data.description,
-            hostId: data.host_id,
-            hostName: data.host_name,
+            hosts: Array.isArray(data.hosts)
+                ? data.hosts.map((host: any) => ({
+                      id: host.id,
+                      name: host.name,
+                  }))
+                : [],
             startTime: data.start_time,
             endTime: data.end_time,
         };
@@ -59,7 +64,7 @@ export async function fetchParticipants(
 
         // Transform from snake_case to camelCase
         const participants: ParticipantOut[] = data.map((participant: any) => ({
-            participantName: participant.participant_name,
+            name: participant.name,
             role: participant.role,
         }));
         return participants;

@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import { AuthContext } from '../providers/AuthProvider';
-import { useSidebar } from '../providers/SidebarProvider';
 import { fetchEvents } from '../services';
 import { EventOut } from '../types/event';
 import '../styles/main-content-container.css';
@@ -16,7 +15,6 @@ export default function Events() {
 
     // Page state and hooks
     const navigate = useNavigate();
-    const collapsed = useSidebar();
     const [events, setEvents] = useState<EventOut[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [roleFilter, setRoleFilter] = useState<'host' | 'participant'>(
@@ -111,7 +109,7 @@ export default function Events() {
                                 <tr className="bg-gray-100 text-left">
                                     <th className="py-2 px-4">Title</th>
                                     <th className="py-2 px-4">Date</th>
-                                    <th className="py-2 px-4">Host</th>
+                                    <th className="py-2 px-4">Hosts</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -152,12 +150,11 @@ export default function Events() {
                                                 : ''}
                                         </td>
                                         <td className="py-2 px-4 border-l border-gray-200">
-                                            {event.hostName}
-                                            {event.hostId === auth.user?.id && (
-                                                <span className="ml-2 px-1.5 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">
-                                                    You
-                                                </span>
-                                            )}
+                                            {event.hosts.map((host) => (
+                                                <div key={host.id}>
+                                                    {host.name}
+                                                </div>
+                                            ))}
                                         </td>
                                     </tr>
                                 ))}

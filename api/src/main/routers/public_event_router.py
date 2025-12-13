@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from src.main.database import get_db
 from src.main.models import Event, Invite
 from src.main.schemas import EventOut, ParticipantOut
-from src.main.utils import serialize_eventout, serialize_participantout
+from src.main.utils import serialize_participantout
 
 router = APIRouter(tags=["PublicEvents"], prefix="/api/public/events")
 
@@ -26,19 +26,25 @@ def get_event_by_token(
     Raises:
         HTTPException: If the invite or event is not found or invalid.
     """
+    # Fetch invite from DB
     invite = db.query(Invite).filter(Invite.token == token).first()
     if not invite:
         raise HTTPException(
             status_code=404, detail="Invalid or expired invite token."
         )
+
+    # Fetch event associated with invite
     event = db.query(Event).filter(Event.id == invite.event_id).first()
     if not event:
         raise HTTPException(
             status_code=404, detail="Event not found for this invite."
         )
-    return serialize_eventout(event, db)
+
+    # Return event after converting from a DB object to an EventOut
+    return EventOut.model_validate(event, from_attributes=True).model_dump()
 
 
+# TODO: Update with query strings (accepted, pending, declined, host, participant)
 @router.get("/{event_id}/participants", response_model=list[ParticipantOut])
 def get_participants(event_id: int, db: Session = Depends(get_db)):
     """
@@ -54,9 +60,10 @@ def get_participants(event_id: int, db: Session = Depends(get_db)):
     Raises:
         HTTPException: If the event is not found.
     """
+    # Fetch invites associated with the event
     invites = (
         db.query(Invite)
         .filter(Invite.event_id == event_id, Invite.status == "accepted")
         .all()
     )
-    return [serialize_participantout(invite) for invite in invites]
+    return [serialize_participantout(invite, db) for invite in invites]

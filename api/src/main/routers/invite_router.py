@@ -129,14 +129,14 @@ def update_invite(
     Raises:
         HTTPException: If invite is invalid or status is invalid.
     """
-    # Fetch the invite from the DB
+    # Fetch invite from DB
     invite = db.query(Invite).filter(Invite.token == token).first()
     if not invite or invite.status != "pending":
         raise HTTPException(
             status_code=404, detail="Invalid or expired invite."
         )
 
-    # Fetch the user from the DB
+    # Fetch user from DB
     user = db.query(User).filter(User.email == invite.email).first()
 
     # Validate the new status data and update the invite
@@ -144,18 +144,18 @@ def update_invite(
         raise HTTPException(status_code=400, detail="Invalid status.")
     invite.status = status_update.status
 
-    # Create an unregistered user if a registered account doesn't already exist
+    # Create unregistered user if a registered account doesn't already exist
     if not user:
         user = User(email=invite.email, is_registered=False)
         db.add(user)
         db.commit()
         db.refresh(user)
 
-    # Set the invite's user_id whether the user existed previously or not
+    # Set invite's user_id whether user existed previously or not
     invite.user_id = user.id
     db.commit()
 
-    # Add the user to the event as a participant or host
+    # Add user to event as a participant or host
     if status_update.status == "accepted" and user:
         # Only add if not already a participant/host
         existing = (
@@ -203,12 +203,30 @@ def delete_invite(
     Raises:
         HTTPException: If invite not found or not authorized.
     """
+    # Check that invite exists
     invite = db.query(Invite).filter(Invite.id == invite_id).first()
     if not invite:
         raise HTTPException(status_code=404, detail="Invite not found.")
+
+    # Fetch event from DB (for host check below)
     event = db.query(Event).filter(Event.id == invite.event_id).first()
-    if not event or event.host_id != user.id:
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found.")
+
+    # Check that user is a host
+    is_host = (
+        db.query(Participant)
+        .filter(
+            Participant.event_id == event.id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
+        .first()
+    )
+    if not is_host:
         raise HTTPException(status_code=403, detail="Not authorized.")
+
+    # Delete the invite
     db.delete(invite)
     db.commit()
     return
@@ -241,43 +259,56 @@ def get_invites(
     Raises:
         HTTPException: If event not found, not authorized, or invalid status.
     """
-
+    # Fetch invites from DB
     query = db.query(Invite)
-    # If user_id is specified, filter by user_id
+
+    # If user has an account, filter invites
     if user_id is not None:
         query = query.filter(Invite.user_id == user_id)
         if event_id is not None:
             query = query.filter(Invite.event_id == event_id)
-    # If event_id is specified and user_id is not, check permissions
+
+    # If user does NOT have an account, filter invites
     elif event_id is not None:
-        # Get the event
+        # Get event from DB
         event = db.query(Event).filter(Event.id == event_id).first()
         if not event:
             raise HTTPException(status_code=404, detail="Event not found.")
-        # Check if user is host
-        if event.host_id == user.id:
-            query = query.filter(Invite.event_id == event_id)
-        else:
-            # Check if user has accepted invite for this event
-            accepted_invite = (
-                db.query(Invite)
-                .filter(
-                    Invite.event_id == event_id,
-                    Invite.user_id == user.id,
-                    Invite.status == "accepted",
-                )
-                .first()
+
+        # Check that user is a host
+        is_host = (
+            db.query(Participant)
+            .filter(
+                Participant.event_id == event.id,
+                Participant.user_id == user.id,
+                Participant.role == "host",
             )
-            if accepted_invite:
-                # Only allow viewing accepted invites for this event
-                query = query.filter(
-                    Invite.event_id == event_id, Invite.status == "accepted"
-                )
-            else:
-                raise HTTPException(
-                    status_code=403,
-                    detail="Not authorized to view participants for this event.",
-                )
+            .first()
+        )
+        if not is_host:
+            raise HTTPException(status_code=403, detail="Not authorized.")
+
+        # Check if user has accepted invite
+        accepted_invite = (
+            db.query(Invite)
+            .filter(
+                Invite.event_id == event_id,
+                Invite.user_id == user.id,
+                Invite.status == "accepted",
+            )
+            .first()
+        )
+        # Fetch accepted invites for event
+        if accepted_invite:
+            query = query.filter(
+                Invite.event_id == event_id, Invite.status == "accepted"
+            )
+        else:
+            raise HTTPException(
+                status_code=403,
+                detail="Not authorized to view participants for this event.",
+            )
+
     # If neither user_id nor event_id is specified, default to current user
     else:
         query = query.filter(Invite.user_id == user.id)

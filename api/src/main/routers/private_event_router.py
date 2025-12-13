@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.main.database import get_db
 from src.main.models import Event, Invite, Participant, User
 from src.main.schemas import EventCreate, EventOut
-from src.main.utils import get_current_user_from_token, serialize_eventout
+from src.main.utils import get_current_user_from_token
 
 router = APIRouter(tags=["PrivateEvents"], prefix="/api/private/events")
 
@@ -47,7 +47,9 @@ def create_event(
     db.commit()
 
     # Use event_serialization utility to return an EventSummaryOut instance
-    return serialize_eventout(new_event)
+    return EventOut.model_validate(
+        new_event, from_attributes=True
+    ).model_dump()
 
 
 @router.get("/", response_model=List[EventOut])
@@ -107,7 +109,10 @@ def get_events(
         )
 
     events = query.order_by(Event.start_time).all()
-    return [serialize_eventout(event) for event in events]
+    return [
+        EventOut.model_validate(event, from_attributes=True).model_dump()
+        for event in events
+    ]
 
 
 @router.get("/{event_id}", response_model=EventOut)
@@ -155,7 +160,7 @@ def get_event_by_id(
             )
 
     # Use event_serialization utility to return an EventFullOut instance
-    return serialize_eventout(db_event)
+    return EventOut.model_validate(db_event, from_attributes=True).model_dump()
 
 
 @router.put("/{event_id}", response_model=EventOut)
@@ -204,7 +209,7 @@ def update_event(
     db.commit()
     db.refresh(db_event)
 
-    return serialize_eventout(db_event)
+    return EventOut.model_validate(db_event, from_attributes=True).model_dump()
 
 
 @router.delete("/{event_id}")

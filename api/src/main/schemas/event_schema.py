@@ -1,19 +1,14 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel
 
 
-class ParticipantOut(BaseModel):
-    participant_name: str
-    role: str
-
-
 class EventBase(BaseModel):
-    title: str
     description: Optional[str] = None
-    start_time: datetime
     end_time: datetime
+    start_time: datetime
+    title: str
 
 
 class EventCreate(EventBase):
@@ -22,4 +17,9 @@ class EventCreate(EventBase):
 
 class EventOut(EventBase):
     id: int
-    hosts: List[str]
+
+
+class ParticipantOut(BaseModel):
+    id: int
+    name: str
+    role: str

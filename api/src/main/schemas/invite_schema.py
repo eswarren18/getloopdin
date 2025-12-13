@@ -15,12 +15,12 @@ class InviteCreate(InviteBase):
 
 
 class InviteOut(InviteBase):
-    id: int
-    token: str
-    status: str
     event: EventOut
+    id: int
+    status: str
+    token: str
     user_name: Optional[str] = None
 
 
 class InviteStatusUpdate(BaseModel):
-    status: str
+    status: str = "pending"

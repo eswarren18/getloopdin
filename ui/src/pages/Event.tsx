@@ -134,7 +134,9 @@ export default function Event() {
                                 <h1 className="text-2xl font-bold mr-6">
                                     {event.title}
                                 </h1>
-                                {event.hostId === auth?.user?.id && (
+                                {event.hosts.some(
+                                    (host) => host.id === auth?.user?.id
+                                ) && (
                                     <>
                                         <button
                                             title="Edit Event"
@@ -258,14 +260,19 @@ export default function Event() {
                             {/* Host */}
                             <h2 className="text-lg font-bold mb-2">Hosts</h2>
                             <div className="flex gap-6 flex-wrap justify-start items-end">
-                                <div className="flex flex-col items-center">
-                                    <div className="w-12 h-12 rounded-full bg-cyan-300 flex items-center justify-center text-white text-xl font-semibold mb-1">
-                                        {event.hostName.charAt(0).toUpperCase()}
+                                {event.hosts.map((host) => (
+                                    <div
+                                        className="flex flex-col items-center"
+                                        key={host.id}
+                                    >
+                                        <div className="w-12 h-12 rounded-full bg-cyan-300 flex items-center justify-center text-white text-xl font-semibold mb-1">
+                                            {host.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="text-xs font-medium mb-1">
+                                            {host.name}
+                                        </div>
                                     </div>
-                                    <div className="text-xs font-medium mb-1">
-                                        {event.hostName}
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -301,7 +308,9 @@ export default function Event() {
                                 </div>
                             </div>
                             {/* Invites */}
-                            {event.hostId === auth?.user?.id && (
+                            {event.hosts.some(
+                                (host) => host.id === auth?.user?.id
+                            ) && (
                                 <div>
                                     <button
                                         className={`w-16 h-16 mb-1 rounded-full flex items-center justify-center transition-colors duration-200 cursor-pointer ${featureSelection === 'invites' ? 'bg-indigo-500' : 'bg-indigo-300'} ${featureSelection !== 'invites' ? 'hover:bg-indigo-400' : ''}`}
@@ -477,9 +486,9 @@ export default function Event() {
                     )}
                     {/* Render EventInvites if selected */}
                     {featureSelection === 'invites' &&
-                        event.hostId === auth?.user?.id && (
-                            <EventInvites eventId={eventId} />
-                        )}
+                        event.hosts.some(
+                            (host) => host.id === auth?.user?.id
+                        ) && <EventInvites eventId={eventId} />}
                     {featureSelection === 'faq' && <Faq />}
                     {featureSelection === 'chat' && <Chat />}
                     {featureSelection === 'packing' && <Packing />}
