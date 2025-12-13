@@ -1,7 +1,12 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
+
+
+class ParticipantOut(BaseModel):
+    participant_name: str
+    role: str
 
 
 class EventBase(BaseModel):
@@ -17,10 +22,4 @@ class EventCreate(EventBase):
 
 class EventOut(EventBase):
     id: int
-    host_id: int
-    host_name: str
-
-
-class ParticipantOut(BaseModel):
-    participant_name: str
-    role: str
+    hosts: List[str]

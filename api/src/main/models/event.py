@@ -17,12 +17,6 @@ class Event(Base):
     description = Column(Text, nullable=True)
     start_time = Column(TIMESTAMP(timezone=True), nullable=False)
     end_time = Column(TIMESTAMP(timezone=True), nullable=False)
-    host_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-    host = relationship(
-        "User", backref=backref("hosted_events", cascade="all, delete-orphan")
-    )
     participants = relationship(
         "Participant", back_populates="event", cascade="all, delete-orphan"
     )

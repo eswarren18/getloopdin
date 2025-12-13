@@ -45,9 +45,20 @@ def create_invite(
     Raises:
         HTTPException: If not authorized or invite already exists.
     """
-    # Only the host can invite participants
+    # Fetch event from the DB
     event = db.query(Event).filter(Event.id == invite_details.event_id).first()
-    if not event or event.host_id != user.id:
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found.")
+    is_host = (
+        db.query(Participant)
+        .filter(
+            Participant.event_id == invite_details.event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
+        .first()
+    )
+    if not is_host:
         raise HTTPException(status_code=403, detail="Not authorized.")
 
     # Handle if an invite has already been sent
@@ -144,13 +155,24 @@ def update_invite(
     invite.user_id = user.id
     db.commit()
 
-    # Add the user as a participant
+    # Add the user to the event as a participant or host
     if status_update.status == "accepted" and user:
-        event_participant = Participant(
-            event_id=invite.event_id, user_id=user.id, role=invite.role
+        # Only add if not already a participant/host
+        existing = (
+            db.query(Participant)
+            .filter(
+                Participant.event_id == invite.event_id,
+                Participant.user_id == user.id,
+                Participant.role == invite.role,
+            )
+            .first()
         )
-        db.add(event_participant)
-        db.commit()
+        if not existing:
+            event_participant = Participant(
+                event_id=invite.event_id, user_id=user.id, role=invite.role
+            )
+            db.add(event_participant)
+            db.commit()
         db.refresh(invite)
         return serialize_inviteout(invite, db)
     elif status_update.status == "accepted":

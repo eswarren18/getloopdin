@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from src.main.database import get_db
 from src.main.models import Event, Invite, Participant, User
@@ -32,7 +32,6 @@ def create_event(
     new_event = Event(
         title=event_details.title,
         description=event_details.description,
-        host_id=user.id,
         start_time=event_details.start_time,
         end_time=event_details.end_time,
     )
@@ -48,7 +47,7 @@ def create_event(
     db.commit()
 
     # Use event_serialization utility to return an EventSummaryOut instance
-    return serialize_eventout(new_event, db)
+    return serialize_eventout(new_event)
 
 
 @router.get("/", response_model=List[EventOut])
@@ -72,12 +71,17 @@ def get_events(
     Raises:
         HTTPException: If an invalid type is provided.
     """
-    # Save current time to now
+    # Save the current time
     now = datetime.now()
 
     # Role-based event query
     if role == "host":
-        query = db.query(Event).filter(Event.host_id == user.id)
+        event_ids = (
+            db.query(Participant.event_id)
+            .filter(Participant.user_id == user.id, Participant.role == "host")
+            .subquery()
+        )
+        query = db.query(Event).filter(Event.id.in_(event_ids.select()))
     elif role == "participant":
         event_ids = (
             db.query(Participant.event_id)
@@ -103,7 +107,7 @@ def get_events(
         )
 
     events = query.order_by(Event.start_time).all()
-    return [serialize_eventout(event, db) for event in events]
+    return [serialize_eventout(event) for event in events]
 
 
 @router.get("/{event_id}", response_model=EventOut)
@@ -126,22 +130,23 @@ def get_event_by_id(
     Raises:
         HTTPException: If the event is not found or not accessible.
     """
-    # Fetch the event if the user is the host
+    # Fetch the event if the user is a host
     db_event = (
         db.query(Event)
-        .filter(Event.id == event_id, Event.host_id == user.id)
+        .join(Participant, Participant.event_id == Event.id)
+        .filter(
+            Event.id == event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
         .first()
     )
     if not db_event:
-        # If not the host, fetch the event if the user is a participant
+        # If not a host, fetch the event if the user is a participant
         db_event = (
             db.query(Event)
-            .join(Invite, Invite.event_id == Event.id)
-            .filter(
-                Event.id == event_id,
-                Invite.user_id == user.id,
-                Invite.status == "accepted",
-            )
+            .join(Participant, Participant.event_id == Event.id)
+            .filter(Event.id == event_id, Participant.user_id == user.id)
             .first()
         )
         if not db_event:
@@ -150,7 +155,7 @@ def get_event_by_id(
             )
 
     # Use event_serialization utility to return an EventFullOut instance
-    return serialize_eventout(db_event, db)
+    return serialize_eventout(db_event)
 
 
 @router.put("/{event_id}", response_model=EventOut)
@@ -175,10 +180,15 @@ def update_event(
     Raises:
         HTTPException: If the event is not found or not accessible.
     """
-    # Fetch the event from the DB
+    # Fetch the event if the user is a host
     db_event = (
         db.query(Event)
-        .filter(Event.id == event_id, Event.host_id == user.id)
+        .join(Participant, Participant.event_id == Event.id)
+        .filter(
+            Event.id == event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
         .first()
     )
     if not db_event:
@@ -194,8 +204,7 @@ def update_event(
     db.commit()
     db.refresh(db_event)
 
-    # Use event_serialization utility to return an EventFullOut instance
-    return serialize_eventout(db_event, db)
+    return serialize_eventout(db_event)
 
 
 @router.delete("/{event_id}")
@@ -220,7 +229,12 @@ def delete_event(
     """
     db_event = (
         db.query(Event)
-        .filter(Event.id == event_id, Event.host_id == user.id)
+        .join(Participant, Participant.event_id == Event.id)
+        .filter(
+            Event.id == event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
         .first()
     )
     if not db_event:
