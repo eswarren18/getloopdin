@@ -235,7 +235,7 @@ def delete_invite(
 @router.get("/", response_model=list[InviteOut])
 def get_invites(
     status: str = Query(
-        None, description="Invite status: pending, accepted, declined, all"
+        None, description="Status: pending, accepted, declined, all"
     ),
     user_id: int = Query(None, description="Filter by user_id"),
     event_id: int = Query(None, description="Filter by event_id"),
@@ -259,27 +259,20 @@ def get_invites(
     Raises:
         HTTPException: If event not found, not authorized, or invalid status.
     """
-    # Fetch invites from DB
-    query = db.query(Invite)
+    invites = []
 
-    # If user has an account, filter invites
-    if user_id is not None:
-        query = query.filter(Invite.user_id == user_id)
-        if event_id is not None:
-            query = query.filter(Invite.event_id == event_id)
-
-    # If user does NOT have an account, filter invites
-    elif event_id is not None:
-        # Get event from DB
+    # Fetch invites for an event
+    if event_id is not None:
+        # Check if event exists
         event = db.query(Event).filter(Event.id == event_id).first()
         if not event:
             raise HTTPException(status_code=404, detail="Event not found.")
 
-        # Check that user is a host
+        # Check if user is a host
         is_host = (
             db.query(Participant)
             .filter(
-                Participant.event_id == event.id,
+                Participant.event_id == event_id,
                 Participant.user_id == user.id,
                 Participant.role == "host",
             )
@@ -288,36 +281,21 @@ def get_invites(
         if not is_host:
             raise HTTPException(status_code=403, detail="Not authorized.")
 
-        # Check if user has accepted invite
-        accepted_invite = (
-            db.query(Invite)
-            .filter(
-                Invite.event_id == event_id,
-                Invite.user_id == user.id,
-                Invite.status == "accepted",
-            )
-            .first()
-        )
-        # Fetch accepted invites for event
-        if accepted_invite:
-            query = query.filter(
-                Invite.event_id == event_id, Invite.status == "accepted"
-            )
-        else:
-            raise HTTPException(
-                status_code=403,
-                detail="Not authorized to view participants for this event.",
-            )
+        # Fetch invites from DB
+        invites = db.query(Invite).filter(Invite.event_id == event_id)
 
-    # If neither user_id nor event_id is specified, default to current user
+    # Fetch invites for current user
     else:
-        query = query.filter(Invite.user_id == user.id)
+        invites = db.query(Invite).filter(Invite.user_id == user.id)
+
+    # Filter invites by status
     if status and status != "all":
         if status not in ["pending", "accepted", "declined"]:
             raise HTTPException(
                 status_code=400,
                 detail="Invalid status parameter. Must be 'pending', 'accepted', 'declined', or 'all'.",
             )
-        query = query.filter(Invite.status == status)
-    invites = query.all()
+        invites = invites.filter(Invite.status == status)
+
+    # Return serialized invites
     return [serialize_inviteout(invite, db) for invite in invites]

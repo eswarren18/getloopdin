@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from src.main.database import get_db
-from src.main.models import Event, Invite
+from src.main.models import Event, Invite, Participant
 from src.main.schemas import EventOut, ParticipantOut
 from src.main.utils import serialize_participantout
 
@@ -44,26 +44,40 @@ def get_event_by_token(
     return EventOut.model_validate(event, from_attributes=True).model_dump()
 
 
-# TODO: Update with query strings (accepted, pending, declined, host, participant)
-@router.get("/{event_id}/participants", response_model=list[ParticipantOut])
-def get_participants(event_id: int, db: Session = Depends(get_db)):
+@router.get("/token/{token}/participants", response_model=list[ParticipantOut])
+def get_participants_by_event_token(
+    token: str,
+    db: Session = Depends(get_db),
+    role: str = Query(None, description="Role: 'host' or 'participant'"),
+):
     """
-    Retrieve the list of accepted participants for a public event.
+    Retrieve the list of participants for a public event using the event token, optionally filtered by role.
 
     Args:
-        event_id (int): ID of the event to fetch participants for.
+        token (str): Invite token from the URL.
         db (Session): Database session.
+        role (str, optional): Role to filter by ('host' or 'participant').
 
     Returns:
-        List[InviteOut]: List of accepted invites (participants) for the event.
+        List[ParticipantOut]: List of participants for the event.
 
     Raises:
-        HTTPException: If the event is not found.
+        HTTPException: If the invite or event is not found or invalid.
     """
-    # Fetch invites associated with the event
-    invites = (
-        db.query(Invite)
-        .filter(Invite.event_id == event_id, Invite.status == "accepted")
-        .all()
+    # Fetch invite from DB
+    invite = db.query(Invite).filter(Invite.token == token).first()
+    if not invite:
+        raise HTTPException(
+            status_code=404, detail="Invalid or expired invite token."
+        )
+
+    # Fetch participants from DB based on filter criteria
+    participants = db.query(Participant).filter(
+        Participant.event_id == invite.event_id
     )
-    return [serialize_participantout(invite, db) for invite in invites]
+    if role in {"host", "participant"}:
+        participants = participants.filter(Participant.role == role)
+    return [
+        serialize_participantout(participant, db)
+        for participant in participants
+    ]

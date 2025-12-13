@@ -1,4 +1,4 @@
-import { EventCreate, EventOut } from '../types/event';
+import { EventCreate, EventOut, ParticipantOut } from '../types/event';
 
 export const baseUrl = import.meta.env.VITE_API_URL;
 if (!baseUrl) {
@@ -30,12 +30,6 @@ export async function fetchEvents(
             id: event.id,
             title: event.title,
             description: event.description,
-            hosts: Array.isArray(event.hosts)
-                ? event.hosts.map((host: any) => ({
-                      id: host.id,
-                      name: host.name,
-                  }))
-                : [],
             startTime: event.start_time,
             endTime: event.end_time,
         }));
@@ -79,12 +73,6 @@ export async function createEvent(
             id: data.id,
             title: data.title,
             description: data.description,
-            hosts: Array.isArray(data.hosts)
-                ? data.hosts.map((host: any) => ({
-                      id: host.id,
-                      name: host.name,
-                  }))
-                : [],
             startTime: data.start_time,
             endTime: data.end_time,
         };
@@ -121,12 +109,6 @@ export async function fetchEventById(
             id: data.id,
             title: data.title,
             description: data.description,
-            hosts: Array.isArray(data.hosts)
-                ? data.hosts.map((host: any) => ({
-                      id: host.id,
-                      name: host.name,
-                  }))
-                : [],
             startTime: data.start_time,
             endTime: data.end_time,
         };
@@ -176,12 +158,6 @@ export async function updateEvent(
             id: data.id,
             title: data.title,
             description: data.description,
-            hosts: Array.isArray(data.hosts)
-                ? data.hosts.map((host: any) => ({
-                      id: host.id,
-                      name: host.name,
-                  }))
-                : [],
             startTime: data.start_time,
             endTime: data.end_time,
         };
@@ -210,5 +186,29 @@ export async function deleteEvent(eventId: number): Promise<true | Error> {
         return true;
     } catch (error) {
         return error instanceof Error ? error : new Error('Unknown error');
+    }
+}
+
+export async function fetchParticipants(
+    eventId: number,
+    role?: 'host' | 'participant'
+): Promise<ParticipantOut[]> {
+    // Sent GET request to the API
+    try {
+        const url = role
+            ? `${baseUrl}/api/private/events/${eventId}/participants?role=${role}`
+            : `${baseUrl}/api/private/events/${eventId}/participants`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Failed to fetch participants');
+        }
+
+        // Transform Response object to JSON
+        const data = await response.json();
+
+        return data;
+    } catch (error) {
+        console.error('Unknown error in fetchParticipants:', error);
+        throw error;
     }
 }

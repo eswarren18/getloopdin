@@ -19,8 +19,14 @@ import {
 } from '../components';
 import { AuthContext } from '../providers/AuthProvider';
 import { useSidebar } from '../providers/SidebarProvider';
-import { deleteEvent, fetchEventById, fetchEventByToken } from '../services';
-import { EventOut } from '../types/event';
+import {
+    deleteEvent,
+    fetchEventById,
+    fetchEventByToken,
+    fetchParticipants,
+    fetchParticipantsByToken,
+} from '../services';
+import { EventOut, ParticipantOut } from '../types/event';
 
 export default function Event() {
     // Redirect to home if user is not logged in or unregistered user doesn't have a token
@@ -49,24 +55,31 @@ export default function Event() {
         | 'itinerary'
         | 'polls'
     >('participants');
+    const [hosts, setHosts] = useState<ParticipantOut[]>([]);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-    // Fetch event details
-    async function fetchEventData() {
+    // Fetch event and host details
+    async function fetchData() {
         try {
-            let data;
+            let eventData;
+            let hostData;
             if (eventId) {
-                data = await fetchEventById(Number(eventId));
+                eventData = await fetchEventById(Number(eventId));
+                hostData = await fetchParticipants(Number(eventId), 'host');
             } else if (token) {
-                data = await fetchEventByToken(token);
+                eventData = await fetchEventByToken(token);
+                hostData = await fetchParticipantsByToken(token, 'host');
             } else {
                 setError('No event ID or token provided');
                 return;
             }
-            if (data instanceof Error) {
-                setError(data.message);
+
+            // Update state
+            if (!(eventData instanceof Error)) {
+                setEvent(eventData);
+                setHosts(hostData);
             } else {
-                setEvent(data);
+                setError(eventData.message);
             }
         } catch (err) {
             setError('Failed to load event');
@@ -94,10 +107,10 @@ export default function Event() {
 
     // Run the fetchData function on component mount
     useEffect(() => {
-        fetchEventData();
+        fetchData();
     }, []);
 
-    // TODO: clean this up
+    // TODO: Error should use the error component
     if (error) return <div>{error}</div>;
     if (!event) return <div>Event not found.</div>;
 
@@ -134,7 +147,7 @@ export default function Event() {
                                 <h1 className="text-2xl font-bold mr-6">
                                     {event.title}
                                 </h1>
-                                {event.hosts.some(
+                                {hosts.some(
                                     (host) => host.id === auth?.user?.id
                                 ) && (
                                     <>
@@ -257,10 +270,10 @@ export default function Event() {
                                     Placeholder Location
                                 </div>
                             </div>
-                            {/* Host */}
+                            {/* Hosts */}
                             <h2 className="text-lg font-bold mb-2">Hosts</h2>
                             <div className="flex gap-6 flex-wrap justify-start items-end">
-                                {event.hosts.map((host) => (
+                                {hosts.map((host) => (
                                     <div
                                         className="flex flex-col items-center"
                                         key={host.id}
@@ -308,7 +321,7 @@ export default function Event() {
                                 </div>
                             </div>
                             {/* Invites */}
-                            {event.hosts.some(
+                            {hosts.some(
                                 (host) => host.id === auth?.user?.id
                             ) && (
                                 <div>
@@ -486,9 +499,9 @@ export default function Event() {
                     )}
                     {/* Render EventInvites if selected */}
                     {featureSelection === 'invites' &&
-                        event.hosts.some(
-                            (host) => host.id === auth?.user?.id
-                        ) && <EventInvites eventId={eventId} />}
+                        hosts.some((host) => host.id === auth?.user?.id) && (
+                            <EventInvites eventId={eventId} />
+                        )}
                     {featureSelection === 'faq' && <Faq />}
                     {featureSelection === 'chat' && <Chat />}
                     {featureSelection === 'packing' && <Packing />}

@@ -26,7 +26,7 @@ export function EventInvites({ eventId }: EventParticipantsProps) {
             }
             const data = await fetchInvites(selectedStatus, parseInt(eventId));
             setInvites(data);
-        } catch (err) {
+        } catch (error) {
             console.error('Failed to load participants');
             setError('Failed to load participants');
         }

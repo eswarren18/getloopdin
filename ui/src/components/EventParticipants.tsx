@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchParticipants } from '../services/publicEventService';
+import { fetchParticipants } from '../services';
 import { ErrorDisplay } from './ErrorDisplay';
 import { ParticipantOut } from '../types/event';
 
@@ -8,7 +8,7 @@ interface EventParticipantsProps {
 }
 
 export function EventParticipants({ eventId }: EventParticipantsProps) {
-    // Component state
+    // Component state and hooks
     const [error, setError] = useState<string | null>(null);
     const [participants, setParticipants] = useState<ParticipantOut[]>([]);
 
@@ -19,7 +19,10 @@ export function EventParticipants({ eventId }: EventParticipantsProps) {
                 setError('No event ID provided.');
                 return;
             }
-            const data = await fetchParticipants(parseInt(eventId));
+            const data = await fetchParticipants(
+                parseInt(eventId),
+                'participant'
+            );
             setParticipants(data);
         } catch {
             setError('Failed to load participants');
@@ -44,12 +47,10 @@ export function EventParticipants({ eventId }: EventParticipantsProps) {
                     {participants.map((participant, index) => (
                         <div key={index} className="flex flex-col items-center">
                             <div className="w-12 h-12 rounded-full bg-cyan-300 flex items-center justify-center text-white text-lg font-semibold mb-1">
-                                {participant.participantName
-                                    .charAt(0)
-                                    .toUpperCase()}
+                                {participant.name.charAt(0).toUpperCase()}
                             </div>
                             <div className="text-xs font-medium mb-1">
-                                {participant.participantName}
+                                {participant.name}
                             </div>
                         </div>
                     ))}

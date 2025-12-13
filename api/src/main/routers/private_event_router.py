@@ -1,12 +1,15 @@
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from src.main.database import get_db
 from src.main.models import Event, Invite, Participant, User
-from src.main.schemas import EventCreate, EventOut
-from src.main.utils import get_current_user_from_token
+from src.main.schemas import EventCreate, EventOut, ParticipantOut
+from src.main.utils import (
+    get_current_user_from_token,
+    serialize_participantout,
+)
 
 router = APIRouter(tags=["PrivateEvents"], prefix="/api/private/events")
 
@@ -76,7 +79,7 @@ def get_events(
     # Save the current time
     now = datetime.now()
 
-    # Role-based event query
+    # Role-based filtering
     if role == "host":
         event_ids = (
             db.query(Participant.event_id)
@@ -161,6 +164,38 @@ def get_event_by_id(
 
     # Use event_serialization utility to return an EventFullOut instance
     return EventOut.model_validate(db_event, from_attributes=True).model_dump()
+
+
+@router.get("/{event_id}/participants", response_model=list[ParticipantOut])
+def get_participants_by_event_id(
+    event_id: int,
+    db: Session = Depends(get_db),
+    role: str = Query(None, description="Role: 'host' or 'participant'"),
+):
+    """
+    Retrieve the list of participants for a public event, optionally filtered by role.
+
+    Args:
+        event_id (int): ID of the event to fetch participants for.
+        db (Session): Database session.
+        role (str, optional): Role to filter by ('host' or 'participant').
+
+    Returns:
+        List[ParticipantOut]: List of participants for the event.
+
+    Raises:
+        HTTPException: If the event is not found.
+    """
+    # Fetch participants from DB based on filter criteria
+    participants = db.query(Participant).filter(
+        Participant.event_id == event_id
+    )
+    if role in {"host", "participant"}:
+        participants = participants.filter(Participant.role == role)
+    return [
+        serialize_participantout(participant, db)
+        for participant in participants
+    ]
 
 
 @router.put("/{event_id}", response_model=EventOut)

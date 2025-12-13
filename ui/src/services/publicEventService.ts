@@ -32,12 +32,6 @@ export async function fetchEventByToken(
             id: data.id,
             title: data.title,
             description: data.description,
-            hosts: Array.isArray(data.hosts)
-                ? data.hosts.map((host: any) => ({
-                      id: host.id,
-                      name: host.name,
-                  }))
-                : [],
             startTime: data.start_time,
             endTime: data.end_time,
         };
@@ -47,29 +41,33 @@ export async function fetchEventByToken(
     }
 }
 
-export async function fetchParticipants(
-    eventId: number
+export async function fetchParticipantsByToken(
+    token: string,
+    role?: 'host' | 'participant'
 ): Promise<ParticipantOut[]> {
-    // Sent GET request to the API
     try {
         const response = await fetch(
-            `${baseUrl}/api/public/events/${eventId}/participants/`
+            `${baseUrl}/api/public/events/token/${token}/participants?role=${role}`,
+            {
+                credentials: 'include',
+            }
         );
         if (!response.ok) {
             throw new Error('Failed to fetch participants');
         }
 
-        // Transform Response object to JSON
         const data = await response.json();
 
         // Transform from snake_case to camelCase
-        const participants: ParticipantOut[] = data.map((participant: any) => ({
-            name: participant.name,
-            role: participant.role,
+        const participants: ParticipantOut[] = data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            email: item.email,
+            role: item.role,
         }));
         return participants;
     } catch (error) {
-        console.error('Unknown error in fetchParticipants:', error);
-        throw error;
+        console.error('Error fetching participants by token:', error);
+        return [];
     }
 }

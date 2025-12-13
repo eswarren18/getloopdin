@@ -14,11 +14,6 @@ export function Sidebar() {
     const navigate = useNavigate();
     const collapsed = useSidebar();
 
-    useEffect(() => {
-        // Console log to track Sidebar re-mounts
-        console.log('Sidebar remounted');
-    }, []);
-
     // Conditional styles
     const sidebarStyle = collapsed ? 'w-16 items-center' : 'w-1/5';
     const buttonStyle = collapsed

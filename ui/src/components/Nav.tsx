@@ -13,11 +13,6 @@ export function Nav({ sidebarCollapsed, setSidebarCollapsed }: NavProps) {
     const signOut = auth?.signOut;
     const location = useLocation();
 
-    useEffect(() => {
-        // Console log to track Nav re-mounts
-        console.log('Nav remounted');
-    }, []);
-
     return (
         <nav className="flex fixed w-full p-4 border-b border-gray-200 items-center z-50 bg-white">
             <div className="flex gap-4 items-center">

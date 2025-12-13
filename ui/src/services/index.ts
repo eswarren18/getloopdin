@@ -5,6 +5,10 @@ export {
     fetchEventById,
     createEvent,
     fetchEvents,
+    fetchParticipants,
     updateEvent,
 } from './privateEventService';
-export { fetchParticipants, fetchEventByToken } from './publicEventService';
+export {
+    fetchEventByToken,
+    fetchParticipantsByToken,
+} from './publicEventService';

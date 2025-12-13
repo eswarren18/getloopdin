@@ -40,25 +40,19 @@ export async function createInvite(
 
         // Transform from snake_case to camelCase
         const invite: InviteOut = {
-            id: data.id,
-            token: data.token,
-            userName: data.user_name,
             email: data.email,
-            role: data.role,
-            status: data.status,
             event: {
                 description: data.event.description,
                 endTime: data.event.end_time,
-                hosts: Array.isArray(data.event.hosts)
-                    ? data.event.hosts.map((host: any) => ({
-                          id: host.id,
-                          name: host.name,
-                      }))
-                    : [],
                 id: data.event.id,
                 startTime: data.event.start_time,
                 title: data.event.title,
             },
+            id: data.id,
+            role: data.role,
+            status: data.status,
+            token: data.token,
+            userName: data.user_name,
         };
         return invite;
     } catch (error) {
@@ -93,25 +87,19 @@ export async function fetchInvites(
 
         // Transform from snake_case to camelCase
         const invites: InviteOut[] = data.map((invite: any) => ({
-            id: invite.id,
-            token: invite.token,
-            userName: invite.user_name,
             email: invite.email,
-            role: invite.role,
-            status: invite.status,
             event: {
                 description: invite.event.description,
                 endTime: invite.event.end_time,
-                hosts: Array.isArray(invite.event.hosts)
-                    ? invite.event.hosts.map((host: any) => ({
-                          id: host.id,
-                          name: host.name,
-                      }))
-                    : [],
                 id: invite.event.id,
                 startTime: invite.event.start_time,
                 title: invite.event.title,
             },
+            id: invite.id,
+            role: invite.role,
+            status: invite.status,
+            token: invite.token,
+            userName: invite.user_name,
         }));
 
         return invites;
@@ -144,25 +132,19 @@ export async function respondToInvite(
 
         // Transform snake_case to camelCase
         const invite: InviteOut = {
-            id: data.id,
-            token: data.token,
-            userName: data.user_name,
             email: data.email,
-            role: data.role,
-            status: data.status,
             event: {
                 description: data.event.description,
                 endTime: data.event.end_time,
-                hosts: Array.isArray(data.event.hosts)
-                    ? data.event.hosts.map((host: any) => ({
-                          id: host.id,
-                          name: host.name,
-                      }))
-                    : [],
                 id: data.event.id,
                 startTime: data.event.start_time,
                 title: data.event.title,
             },
+            id: data.id,
+            role: data.role,
+            status: data.status,
+            token: data.token,
+            userName: data.user_name,
         };
 
         return invite;

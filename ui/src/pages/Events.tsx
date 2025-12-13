@@ -24,7 +24,7 @@ export default function Events() {
         'upcoming'
     );
 
-    // Fetch events details
+    // Fetch event details
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -37,7 +37,7 @@ export default function Events() {
         }
     };
 
-    // Run the fetchData function on component mount
+    // Run fetchData function on component mount
     useEffect(() => {
         fetchData();
     }, [roleFilter, timeFilter]);
@@ -109,7 +109,6 @@ export default function Events() {
                                 <tr className="bg-gray-100 text-left">
                                     <th className="py-2 px-4">Title</th>
                                     <th className="py-2 px-4">Date</th>
-                                    <th className="py-2 px-4">Hosts</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -148,13 +147,6 @@ export default function Events() {
                                                       }
                                                   )
                                                 : ''}
-                                        </td>
-                                        <td className="py-2 px-4 border-l border-gray-200">
-                                            {event.hosts.map((host) => (
-                                                <div key={host.id}>
-                                                    {host.name}
-                                                </div>
-                                            ))}
                                         </td>
                                     </tr>
                                 ))}

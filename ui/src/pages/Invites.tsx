@@ -2,8 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import { AuthContext } from '../providers/AuthProvider';
-import { useSidebar } from '../providers/SidebarProvider';
-import { fetchInvites, respondToInvite } from '../services/inviteService';
+import { fetchInvites, respondToInvite } from '../services';
 import { InviteOut } from '../types/invite';
 
 export default function Invites() {
@@ -15,7 +14,6 @@ export default function Invites() {
 
     // Page state and hooks
     const navigate = useNavigate();
-    const collapsed = useSidebar();
     const [invites, setInvites] = useState<InviteOut[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -73,7 +71,6 @@ export default function Invites() {
                             <tr className="bg-gray-100 text-left">
                                 <th className="py-2 px-4">Title</th>
                                 <th className="py-2 px-4">Description</th>
-                                <th className="py-2 px-4">Invited By</th>
                                 <th className="py-2 px-4">Your Role</th>
                                 <th className="py-2 px-4">Response</th>
                             </tr>
@@ -89,14 +86,6 @@ export default function Invites() {
                                     </td>
                                     <td className="py-2 px-4 border-l border-gray-200">
                                         {invite.event.description}
-                                    </td>
-                                    <td className="py-2 px-4 border-l border-gray-200">
-                                        {invite.event.hosts &&
-                                        Array.isArray(invite.event.hosts)
-                                            ? invite.event.hosts.map(
-                                                  (host) => host.name
-                                              )
-                                            : ''}
                                     </td>
                                     <td className="py-2 px-4 border-l border-gray-200">
                                         {invite.role}

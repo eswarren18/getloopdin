@@ -7,17 +7,12 @@ export interface EventBase {
 
 export interface EventCreate extends EventBase {}
 
-export interface HostOut {
-    id: number;
-    name: string;
-}
-
 export interface EventOut extends EventBase {
-    hosts: HostOut[];
     id: number;
 }
 
 export interface ParticipantOut {
-    participantName: string;
+    id: number;
+    name: string;
     role: string;
 }
