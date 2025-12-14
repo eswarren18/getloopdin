@@ -9,6 +9,7 @@ import {
 import {
     Chat,
     ConfirmDelete,
+    ErrorDisplay,
     EventInvites,
     EventParticipants,
     Faq,
@@ -112,7 +113,7 @@ export default function Event() {
 
     // TODO: Error should use the error component
     if (error) return <div>{error}</div>;
-    if (!event) return <div>Event not found.</div>;
+    if (!event) return <ErrorDisplay message="Event not found." />;
 
     // Format start and end times to display
     const formattedStart = event.startTime

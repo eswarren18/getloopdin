@@ -82,7 +82,21 @@ export default function Invites() {
                                     className="border-b last:border-b-0 border-gray-200"
                                 >
                                     <td className="py-2 px-4">
-                                        {invite.event.title}
+                                        <button
+                                            className="cursor-pointer text-indigo-600 hover:underline text-left w-full"
+                                            onClick={() => {
+                                                navigate(
+                                                    `/events/${invite.event.id}`,
+                                                    {
+                                                        state: {
+                                                            from: '/invites',
+                                                        },
+                                                    }
+                                                );
+                                            }}
+                                        >
+                                            {invite.event.title}
+                                        </button>
                                     </td>
                                     <td className="py-2 px-4 border-l border-gray-200">
                                         {invite.event.description}
