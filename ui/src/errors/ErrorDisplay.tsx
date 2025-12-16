@@ -3,7 +3,10 @@ interface ErrorDisplayProps {
     className?: string;
 }
 
-export function ErrorDisplay({ message, className = '' }: ErrorDisplayProps) {
+export default function ErrorDisplay({
+    message,
+    className = '',
+}: ErrorDisplayProps) {
     return (
         <div
             className={`flex items-center gap-3 p-4 mb-4 rounded-lg border border-red-300 bg-red-50 text-red-700 shadow-md ${className}`}

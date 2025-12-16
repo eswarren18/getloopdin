@@ -6,7 +6,7 @@ import {
     Navigate,
 } from 'react-router-dom';
 
-import { ConfirmDelete, ErrorDisplay, InviteSentAlert } from '../components';
+import { ConfirmDelete, InviteSentAlert } from '../components';
 import { AuthContext } from '../providers/AuthProvider';
 import { useSidebar } from '../providers/SidebarProvider';
 import {
@@ -19,6 +19,7 @@ import {
 } from '../services';
 import { EventFeaturesBar } from '../components/EventFeaturesBar';
 import { EventOut, ParticipantOut } from '../types/event';
+import { ErrorDisplay, NotFound } from '../errors';
 
 export default function Event() {
     // Redirect to home if user is not logged in or unregistered user doesn't have a token
@@ -106,14 +107,21 @@ export default function Event() {
         }
     }
 
-    // Run the fetchData function on component mount
+    // Run the fetchData function on component mount or when url params change
     useEffect(() => {
+        console.log('Fetching event data...');
         fetchData();
-    }, []);
+    }, [eventId, token]);
 
     // TODO: Error should use the error component
-    if (error) return <div>{error}</div>;
-    if (!event) return <ErrorDisplay message="Event not found." />;
+    if (!event)
+        return (
+            <NotFound
+                headline="Nothing to see here"
+                message="The event may have been deleted, or the link is incorrect."
+            />
+        );
+    if (error) return <ErrorDisplay message="Event not found." />;
 
     // Format start and end times to display
     const formattedStart = event.startTime

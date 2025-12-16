@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import { AuthContext } from '../providers/AuthProvider';
 import { createInvite } from '../services/inviteService';
-import { ErrorDisplay } from '../components/ErrorDisplay';
+import { ErrorDisplay } from '../errors';
 import { InviteCreate } from '../types/invite';
 
 export default function InviteForm() {

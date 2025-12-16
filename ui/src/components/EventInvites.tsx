@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { InviteOut } from '../types/invite';
 import { useNavigate } from 'react-router-dom';
 import { fetchInvites } from '../services/inviteService';
-import { ErrorDisplay } from './ErrorDisplay';
+import { ErrorDisplay } from '../errors';
 
 interface EventParticipantsProps {
     eventId: string | undefined;
