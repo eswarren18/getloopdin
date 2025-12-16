@@ -3,7 +3,7 @@ export { ConfirmDelete } from './ConfirmDelete';
 export { EventInvites } from './EventInvites';
 export { EventParticipants } from './EventParticipants';
 export { Faq } from './Faq';
-export { InviteSentAlert } from './InviteSentAlert';
+export { ErrorSuccessAlert } from './ErrorSuccessAlert';
 export { Itinerary } from './Itinerary';
 export { LoadingIcon } from './LoadingIcon';
 export { Nav } from './Nav';

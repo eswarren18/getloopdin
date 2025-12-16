@@ -6,7 +6,7 @@ import {
     Navigate,
 } from 'react-router-dom';
 
-import { ConfirmDelete, InviteSentAlert } from '../components';
+import { ConfirmDelete, ErrorSuccessAlert } from '../components';
 import { AuthContext } from '../providers/AuthProvider';
 import { useSidebar } from '../providers/SidebarProvider';
 import {
@@ -34,7 +34,7 @@ export default function Event() {
 
     // Page state and hooks
     const location = useLocation();
-    const showInviteSentAlert = location.state?.showInviteSentAlert;
+    const showErrorSuccessAlert = location.state?.showErrorSuccessAlert;
     const navigate = useNavigate();
     const collapsed = useSidebar();
     const [error, setError] = useState<string | null>(null);
@@ -91,19 +91,17 @@ export default function Event() {
     // Handle event deletion
     async function handleDeleteEvent() {
         if (!event) {
-            console.error('No event to delete.');
+            setError('No event to delete.');
             return;
         }
         try {
-            const result = await deleteEvent(event.id);
-            if (result === true) {
-                setShowDeleteDialog(false);
-                navigate('/events');
-            } else {
-                console.error('Failed to delete event.');
-            }
-        } catch (err) {
-            console.error('Error deleting event:', err);
+            await deleteEvent(event.id);
+            setShowDeleteDialog(false);
+            navigate('/events');
+        } catch (error) {
+            setShowDeleteDialog(false);
+            setError('Failed to delete event.');
+            console.error('Delete event error:', error);
         }
     }
 
@@ -113,7 +111,6 @@ export default function Event() {
         fetchData();
     }, [eventId, token]);
 
-    // TODO: Error should use the error component
     if (!event)
         return (
             <NotFound
@@ -121,7 +118,6 @@ export default function Event() {
                 message="The event may have been deleted, or the link is incorrect."
             />
         );
-    if (error) return <ErrorDisplay message="Event not found." />;
 
     // Format start and end times to display
     const formattedStart = event.startTime
@@ -139,7 +135,10 @@ export default function Event() {
 
     return (
         <>
-            {showInviteSentAlert && <InviteSentAlert message="Invite Sent" />}
+            {showErrorSuccessAlert && (
+                <ErrorSuccessAlert message="Invite Sent" type="success" />
+            )}
+            {error && <ErrorSuccessAlert message={error} type="error" />}
             <div className="flex bg-gray-50 min-h-screen z-10">
                 {/* Event content */}
                 <div

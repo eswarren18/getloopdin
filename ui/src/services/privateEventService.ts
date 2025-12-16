@@ -170,22 +170,18 @@ export async function updateEvent(
 export async function deleteEvent(eventId: number): Promise<true | Error> {
     try {
         const response = await fetch(
-            `${baseUrl}/api/private/events/${eventId}`,
+            `${baseUrl}/*********api/private/events/${eventId}`,
             {
                 method: 'DELETE',
                 credentials: 'include',
             }
         );
         if (!response.ok) {
-            const errorMsg =
-                response.status === 404
-                    ? 'Event not found'
-                    : 'Failed to delete event';
-            throw new Error(errorMsg);
+            throw new Error('Failed to delete event');
         }
         return true;
-    } catch (error) {
-        return error instanceof Error ? error : new Error('Unknown error');
+    } catch (e) {
+        throw e;
     }
 }
 

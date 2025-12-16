@@ -47,7 +47,7 @@ export default function InviteForm() {
                 setError(result.message);
             } else {
                 navigate(`/events/${eventId}`, {
-                    state: { showInviteSentAlert: true },
+                    state: { showErrorSuccessAlert: true },
                 });
             }
         } catch (error) {

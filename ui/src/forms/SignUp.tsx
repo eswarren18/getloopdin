@@ -3,6 +3,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { AuthContext } from '../providers/AuthProvider';
 import { signup } from '../services/authService';
+import { ErrorDisplay } from '../errors';
 
 export default function SignUp() {
     // Redirect to events if logged in
@@ -67,9 +68,7 @@ export default function SignUp() {
                 navigate('/events');
             }
         } catch (error) {
-            setError(
-                'Unknown error occurred while signing up. Please try again.'
-            );
+            setError('Could not sign up. Please try again.');
         }
     };
 
@@ -184,7 +183,7 @@ export default function SignUp() {
                     value={form.password}
                 />
             </div>
-            {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+            {error && <ErrorDisplay message={error} />}
             <div className="flex gap-4">
                 <button
                     type="button"

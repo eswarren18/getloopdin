@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 import { AuthContext } from '../providers/AuthProvider';
 import { signin } from '../services/authService';
+import { ErrorDisplay } from '../errors';
 
 export default function SignIn() {
     // Redirect to events if logged in
@@ -107,7 +108,7 @@ export default function SignIn() {
                     value={form.password}
                 />
             </div>
-            {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+            {error && <ErrorDisplay message={error} />}
             <div className="flex gap-4">
                 <button
                     type="button"
