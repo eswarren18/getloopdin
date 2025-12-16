@@ -33,14 +33,14 @@ export default function Home() {
                     <Link to="/signup">
                         <button
                             onClick={() => {}}
-                            className="cursor-pointer rounded-2xl bg-cyan-500 px-8 py-3 text-lg font-semibold text-white shadow hover:bg-cyan-400 active:bg-cyan-300"
+                            className="px-8 py-3 bg-cyan-600 text-white rounded-2xl text-lg font-semibold shadow hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300 cursor-pointer"
                         >
                             Get started
                         </button>
                     </Link>
                     <button
                         onClick={() => {}}
-                        className="cursor-pointer rounded-2xl border border-gray-300 px-8 py-3 text-lg font-semibold hover:bg-indigo-400 active:bg-red-300"
+                        className="px-8 py-3 bg-gray-200 rounded-2xl text-lg font-semibold hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-200 cursor-pointer"
                     >
                         View demo
                     </button>
@@ -136,7 +136,7 @@ export default function Home() {
 
                 <button
                     onClick={() => {}}
-                    className="cursor-pointer mt-10 rounded-2xl bg-indigo-500 px-10 py-4 text-lg font-semibold shadow hover:bg-indigo-400 active:bg-red-300"
+                    className="px-10 py-4 mt-10 bg-cyan-600 text-white rounded-2xl text-lg font-semibold shadow hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-300 cursor-pointer"
                 >
                     Create your first event
                 </button>

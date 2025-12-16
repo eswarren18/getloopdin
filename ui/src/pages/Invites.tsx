@@ -96,7 +96,7 @@ export default function Invites() {
                                     </td>
                                     <td className="flex gap-2 py-2 px-4 border-l border-gray-200">
                                         <button
-                                            className="cursor-pointer bg-green-400 text-white px-3 py-1 rounded font-medium hover:bg-green-500 transition"
+                                            className="basis-1/2 bg-green-600 text-white px-3 py-1 rounded font-medium hover:bg-green-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-300 cursor-pointer"
                                             onClick={() =>
                                                 handleResponse(
                                                     invite.token,
@@ -107,7 +107,7 @@ export default function Invites() {
                                             Accept
                                         </button>
                                         <button
-                                            className="cursor-pointer bg-red-400 text-white px-3 py-1 rounded font-medium hover:bg-red-500 transition"
+                                            className="basis-1/2 bg-red-600 text-white px-3 py-1 rounded font-medium hover:bg-red-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-300 cursor-pointer"
                                             onClick={() =>
                                                 handleResponse(
                                                     invite.token,

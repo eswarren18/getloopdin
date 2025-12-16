@@ -14,6 +14,7 @@ import {
     fetchEventById,
     fetchEventByToken,
     fetchParticipants,
+    fetchParticipantsByToken,
     respondToInvite,
 } from '../services';
 import { EventFeaturesBar } from '../components/EventFeaturesBar';
@@ -50,6 +51,7 @@ export default function Event() {
                 hostData = await fetchParticipants(Number(eventId), 'host');
             } else if (token) {
                 eventData = await fetchEventByToken(token);
+                hostData = await fetchParticipantsByToken(token, 'host');
             } else {
                 setError('No event ID or token provided');
                 return;
@@ -57,12 +59,8 @@ export default function Event() {
 
             // Update state
             if (!(eventData instanceof Error)) {
-                if (eventId) {
-                    setEvent(eventData);
-                    setHosts(hostData ?? []);
-                } else if (token) {
-                    setEvent(eventData);
-                }
+                setEvent(eventData);
+                setHosts(hostData);
             } else {
                 setError(eventData.message);
             }
@@ -146,7 +144,7 @@ export default function Event() {
                                     RSVP:
                                 </span>
                                 <button
-                                    className="cursor-pointer bg-green-500 text-white px-5 py-2 rounded-lg font-semibold text-base shadow hover:bg-green-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-300"
+                                    className="basis-1/2 bg-green-600 text-white px-3 py-1 rounded font-medium hover:bg-green-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-300 cursor-pointer"
                                     onClick={() =>
                                         handleResponse(token, 'accepted')
                                     }
@@ -154,7 +152,7 @@ export default function Event() {
                                     Accept
                                 </button>
                                 <button
-                                    className="cursor-pointer bg-red-500 text-white px-5 py-2 rounded-lg font-semibold text-base shadow hover:bg-red-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                    className="basis-1/2 bg-red-600 text-white px-3 py-1 rounded font-medium hover:bg-red-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-300 cursor-pointer"
                                     onClick={() =>
                                         handleResponse(token, 'declined')
                                     }

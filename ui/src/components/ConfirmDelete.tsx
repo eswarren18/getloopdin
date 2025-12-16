@@ -19,7 +19,7 @@ export function ConfirmDelete({
 }: ConfirmDeleteProps) {
     if (!open) return null;
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="bg-white rounded-lg shadow-lg p-8 min-w-[300px] flex flex-col items-center">
                 <h2 className="text-xl font-bold mb-2 text-center">{title}</h2>
                 {message && (
