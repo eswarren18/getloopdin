@@ -2,8 +2,6 @@
 API Router for User CRUD endpoints
 """
 
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from src.main.database import get_db

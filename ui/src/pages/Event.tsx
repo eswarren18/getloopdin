@@ -14,7 +14,6 @@ import {
     fetchEventById,
     fetchEventByToken,
     fetchParticipants,
-    fetchParticipantsByToken,
     respondToInvite,
 } from '../services';
 import { EventFeaturesBar } from '../components/EventFeaturesBar';
@@ -51,7 +50,6 @@ export default function Event() {
                 hostData = await fetchParticipants(Number(eventId), 'host');
             } else if (token) {
                 eventData = await fetchEventByToken(token);
-                hostData = await fetchParticipantsByToken(token, 'host');
             } else {
                 setError('No event ID or token provided');
                 return;
@@ -59,8 +57,12 @@ export default function Event() {
 
             // Update state
             if (!(eventData instanceof Error)) {
-                setEvent(eventData);
-                setHosts(hostData);
+                if (eventId) {
+                    setEvent(eventData);
+                    setHosts(hostData ?? []);
+                } else if (token) {
+                    setEvent(eventData);
+                }
             } else {
                 setError(eventData.message);
             }

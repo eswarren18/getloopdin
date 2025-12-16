@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from src.main.database import get_db
-from src.main.models import Event, Invite, Participant, User
+from src.main.models import Event, Participant, User
 from src.main.schemas import EventCreate, EventOut, ParticipantOut
 from src.main.utils import (
     get_current_user_from_token,
