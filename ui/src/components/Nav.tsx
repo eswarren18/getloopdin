@@ -48,7 +48,7 @@ export function Nav({ sidebarCollapsed, setSidebarCollapsed }: NavProps) {
                     <>
                         <Link to="/signup">
                             <button
-                                className="cursor-pointer basis-1/2 border border-gray-300 px-3 py-1 rounded-lg font-medium transition-colors duration-200 focus:outline-none hover:bg-indigo-400 active:bg-indigo-300"
+                                className="basis-1/2bg-gray-600 text-white px-3 py-1 rounded font-medium hover:bg-indigo-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-300 cursor-pointer"
                                 disabled={location.pathname === '/signup'}
                             >
                                 Sign Up
@@ -56,7 +56,7 @@ export function Nav({ sidebarCollapsed, setSidebarCollapsed }: NavProps) {
                         </Link>
                         <Link to="/signin">
                             <button
-                                className="cursor-pointer basis-1/2 bg-cyan-500 shadow text-white px-3 py-1 rounded-lg font-medium hover:bg-cyan-400 active:bg-cyan-300"
+                                className="basis-1/2 bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300 cursor-pointer"
                                 disabled={location.pathname === '/signin'}
                             >
                                 Sign In
@@ -109,7 +109,7 @@ export function Nav({ sidebarCollapsed, setSidebarCollapsed }: NavProps) {
                             </svg>
                         </button>
                         <button
-                            className="cursor-pointer bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-400 transition"
+                            className="bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300 cursor-pointer"
                             onClick={signOut}
                         >
                             Sign Out

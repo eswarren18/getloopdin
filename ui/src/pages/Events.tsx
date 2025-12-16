@@ -51,7 +51,7 @@ export default function Events() {
                             Events
                         </h2>
                         <button
-                            className="bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-400 transition-colors duration-150"
+                            className="bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300"
                             onClick={() => navigate('/event-form')}
                         >
                             Create Event

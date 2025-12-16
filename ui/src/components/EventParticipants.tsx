@@ -38,7 +38,7 @@ export function EventParticipants({ eventId }: EventParticipantsProps) {
     if (error) return <ErrorDisplay message={error} />;
 
     return (
-        <div className="w-4/5 mb-6">
+        <div className="w-4/5 mt-6 justify-center mx-auto">
             <h3 className="text-2xl font-bold mb-2">Participants</h3>
             {participants.length === 0 ? (
                 <div>No RSVPs yet!</div>

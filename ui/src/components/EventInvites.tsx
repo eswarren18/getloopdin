@@ -41,7 +41,7 @@ export function EventInvites({ eventId }: EventParticipantsProps) {
     if (error) return <ErrorDisplay message={error} />;
 
     return (
-        <div className="w-4/5 mb-6">
+        <div className="w-4/5 mt-6 justify-center mx-auto">
             <h2 className="text-2xl font-bold mb-2">Invites</h2>
             <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
@@ -79,7 +79,7 @@ export function EventInvites({ eventId }: EventParticipantsProps) {
                         )}
                     </div>
                     <button
-                        className="bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-400 cursor-pointer"
+                        className="bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300 cursor-pointer"
                         onClick={() => navigate(`/invite-form/${eventId}`)}
                     >
                         Invite

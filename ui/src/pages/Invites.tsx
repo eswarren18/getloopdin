@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import { AuthContext } from '../providers/AuthProvider';
-import { fetchInvites, respondToInvite } from '../services';
+import { fetchInvites, respondToInvite, fetchEventByToken } from '../services';
 import { InviteOut } from '../types/invite';
 
 export default function Invites() {
@@ -15,36 +15,28 @@ export default function Invites() {
     // Page state and hooks
     const navigate = useNavigate();
     const [invites, setInvites] = useState<InviteOut[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
 
     // Fetch invite details
     const fetchData = async () => {
         try {
             const data = await fetchInvites('pending');
             setInvites(data);
-            setLoading(false);
         } catch (error) {
             console.error(error);
-            setLoading(false);
         }
     };
 
-    // Handle user response to an invite
+    // Handle user's RSVP
     const handleResponse = async (
         token: string,
-        response: 'accepted' | 'declined'
+        rsvp: 'accepted' | 'declined'
     ) => {
         try {
-            const invite = await respondToInvite(token, response);
-            if (
-                response === 'accepted' &&
-                invite &&
-                invite.event &&
-                invite.event.id
-            ) {
-                navigate(`/events/${invite.event.id}`);
+            const data = await respondToInvite(token, rsvp);
+            if (rsvp === 'accepted' && data?.event?.id) {
+                navigate(`/events/${data.event.id}`);
             }
-            if (response === 'declined') {
+            if (rsvp === 'declined') {
                 await fetchData();
             }
         } catch (error) {
@@ -61,9 +53,7 @@ export default function Invites() {
         <div className="flex bg-gray-50 min-h-screen z-10">
             <div className="flex flex-col gap-4 w-4/5 mx-auto mt-8">
                 <h2 className="text-2xl font-bold mt-4 mb-2">Invites</h2>
-                {loading ? (
-                    <div>Loading...</div>
-                ) : invites.length === 0 ? (
+                {invites.length === 0 ? (
                     <div>No invites found.</div>
                 ) : (
                     <table className="w-full bg-white rounded-lg shadow-sm">
@@ -83,17 +73,17 @@ export default function Invites() {
                                 >
                                     <td className="py-2 px-4">
                                         <button
-                                            className="cursor-pointer text-indigo-600 hover:underline text-left w-full"
-                                            onClick={() => {
+                                            className="cursor-pointer hover:text-cyan-500 text-left w-full"
+                                            onClick={() =>
                                                 navigate(
-                                                    `/events/${invite.event.id}`,
+                                                    `/events/token/${invite.token}`,
                                                     {
                                                         state: {
                                                             from: '/invites',
                                                         },
                                                     }
-                                                );
-                                            }}
+                                                )
+                                            }
                                         >
                                             {invite.event.title}
                                         </button>
