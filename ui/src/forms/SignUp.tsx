@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
-import { AuthContext } from '../providers/AuthProvider';
+import { AuthContext } from '../providers';
 import { signup } from '../services/authService';
 import { ErrorDisplay } from '../errors';
 
@@ -35,7 +35,6 @@ export default function SignUp() {
         e.preventDefault();
 
         // Validate submission data
-        // TODO: require users to use strong passwords
         if (!form.email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
             setError('Please enter a valid email address');
             return;
@@ -53,7 +52,7 @@ export default function SignUp() {
             return;
         }
 
-        // Submit POST request to the API
+        // Call services to fetch API data
         try {
             const result = await signup({
                 email: form.email,
@@ -61,14 +60,11 @@ export default function SignUp() {
                 firstName: form.firstName,
                 lastName: form.lastName,
             });
-            if (result instanceof Error) {
-                setError(result.message);
-            } else {
-                auth?.setUser(result);
-                navigate('/events');
-            }
-        } catch (error) {
-            setError('Could not sign up. Please try again.');
+            auth?.setUser(result);
+            navigate('/events');
+        } catch (e: any) {
+            setError(e?.message || 'Failed to sign up.');
+            console.error('Sign up error:', e);
         }
     };
 

@@ -1,9 +1,9 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { Nav } from './components';
-import { Sidebar } from './components/Sidebar';
-import { SidebarProvider } from './providers/SidebarProvider';
-import { AuthContext } from './providers/AuthProvider';
+import { Sidebar } from './components';
+import { SidebarProvider } from './providers';
+import { AuthContext } from './providers';
 
 import './index.css';
 

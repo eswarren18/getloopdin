@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
-import { AuthContext } from '../providers/AuthProvider';
+import { AuthContext } from '../providers';
 import {
     createEvent,
     fetchEventById,

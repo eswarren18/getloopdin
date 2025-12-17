@@ -1,5 +1,6 @@
 export { Chat } from './Chat';
 export { ConfirmDelete } from './ConfirmDelete';
+export { EventFeaturesBar } from './EventFeaturesBar';
 export { EventInvites } from './EventInvites';
 export { EventParticipants } from './EventParticipants';
 export { Faq } from './Faq';

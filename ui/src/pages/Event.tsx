@@ -6,9 +6,12 @@ import {
     Navigate,
 } from 'react-router-dom';
 
-import { ConfirmDelete, ErrorSuccessAlert } from '../components';
-import { AuthContext } from '../providers/AuthProvider';
-import { useSidebar } from '../providers/SidebarProvider';
+import {
+    ConfirmDelete,
+    ErrorSuccessAlert,
+    EventFeaturesBar,
+} from '../components';
+import { AuthContext, useSidebar } from '../providers';
 import {
     deleteEvent,
     fetchEventById,
@@ -17,9 +20,8 @@ import {
     fetchParticipantsByToken,
     respondToInvite,
 } from '../services';
-import { EventFeaturesBar } from '../components/EventFeaturesBar';
-import { EventOut, ParticipantOut } from '../types/event';
-import { ErrorDisplay, NotFound } from '../errors';
+import { EventOut, ParticipantOut } from '../types';
+import { NotFound } from '../errors';
 
 export default function Event() {
     // Redirect to home if user is not logged in or unregistered user doesn't have a token
@@ -43,8 +45,9 @@ export default function Event() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     // Fetch event and host details
-    async function fetchData() {
+    const fetchData = async () => {
         try {
+            // Call services to fetch API data
             let eventData;
             let hostData;
             if (eventId) {
@@ -55,26 +58,21 @@ export default function Event() {
                 hostData = await fetchParticipantsByToken(token, 'host');
             } else {
                 setError('No event ID or token provided');
+                console.warn('No event ID or token provided');
                 return;
             }
 
-            // Update state
-            if (!(eventData instanceof Error)) {
-                setEvent(eventData);
-                setHosts(hostData);
-            } else {
-                setError(eventData.message);
-            }
-        } catch (err) {
-            setError('Failed to load event');
+            // Update state with API data
+            setEvent(eventData);
+            setHosts(hostData);
+        } catch (e: any) {
+            setError(e?.message || 'Failed to retrieve event.');
+            console.error('Fetch event error:', e);
         }
-    }
+    };
 
     // Handle user's RSVP
-    const handleResponse = async (
-        token: string,
-        rsvp: 'accepted' | 'declined'
-    ) => {
+    const handleRsvp = async (token: string, rsvp: 'accepted' | 'declined') => {
         try {
             const data = await respondToInvite(token, rsvp);
             if (rsvp === 'accepted' && data?.event?.id) {
@@ -83,13 +81,14 @@ export default function Event() {
             if (rsvp === 'declined') {
                 navigate('/invites');
             }
-        } catch (error) {
-            alert('Failed to respond to invite.');
+        } catch (e: any) {
+            setError(e?.message || 'Failed to RSVP.');
+            console.error('RSVP error:', e);
         }
     };
 
     // Handle event deletion
-    async function handleDeleteEvent() {
+    const handleDeleteEvent = async () => {
         if (!event) {
             setError('No event to delete.');
             return;
@@ -98,16 +97,15 @@ export default function Event() {
             await deleteEvent(event.id);
             setShowDeleteDialog(false);
             navigate('/events');
-        } catch (error) {
+        } catch (e: any) {
             setShowDeleteDialog(false);
-            setError('Failed to delete event.');
-            console.error('Delete event error:', error);
+            setError(e?.message || 'Failed to delete event.');
+            console.error('Delete event error:', e);
         }
-    }
+    };
 
     // Run the fetchData function on component mount or when url params change
     useEffect(() => {
-        console.log('Fetching event data...');
         fetchData();
     }, [eventId, token]);
 
@@ -153,7 +151,7 @@ export default function Event() {
                                 <button
                                     className="basis-1/2 bg-green-600 text-white px-3 py-1 rounded font-medium hover:bg-green-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-300 cursor-pointer"
                                     onClick={() =>
-                                        handleResponse(token, 'accepted')
+                                        handleRsvp(token, 'accepted')
                                     }
                                 >
                                     Accept
@@ -161,7 +159,7 @@ export default function Event() {
                                 <button
                                     className="basis-1/2 bg-red-600 text-white px-3 py-1 rounded font-medium hover:bg-red-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-300 cursor-pointer"
                                     onClick={() =>
-                                        handleResponse(token, 'declined')
+                                        handleRsvp(token, 'declined')
                                     }
                                 >
                                     Decline

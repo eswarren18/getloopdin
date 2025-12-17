@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchParticipants } from '../services';
 import { ErrorDisplay } from '../errors';
-import { ParticipantOut } from '../types/event';
+import { ParticipantOut } from '../types';
 
 interface EventParticipantsProps {
     eventId: string | undefined;
@@ -15,17 +15,17 @@ export function EventParticipants({ eventId }: EventParticipantsProps) {
     // Fetch invite details
     const fetchData = async () => {
         try {
-            if (!eventId) {
-                setError('No event ID provided.');
-                return;
-            }
+            // Call services to fetch API data
             const data = await fetchParticipants(
-                parseInt(eventId),
+                Number(eventId),
                 'participant'
             );
+
+            // Update state with API data
             setParticipants(data);
-        } catch {
-            setError('Failed to load participants');
+        } catch (e: any) {
+            setError(e?.message || 'Failed to retrieve participants');
+            console.error('Fetch participants error:', e);
         }
     };
 

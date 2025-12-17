@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
-import { AuthContext } from '../providers/AuthProvider';
+import { AuthContext } from '../providers';
 import { signin } from '../services/authService';
 import { ErrorDisplay } from '../errors';
 
@@ -30,18 +30,18 @@ export default function SignIn() {
             setError('Please enter your password');
             return;
         }
-        // TODO: require users to use strong passwords
 
-        // Submit POST request to the API
-        const result = await signin({
-            email: form.email,
-            password: form.password,
-        });
-        if (result instanceof Error) {
-            setError(result.message);
-        } else {
+        // Call services to fetch API data
+        try {
+            const result = await signin({
+                email: form.email,
+                password: form.password,
+            });
             auth?.setUser(result);
             navigate('/events');
+        } catch (e: any) {
+            setError(e?.message || 'Incorrect email or password.');
+            console.error('Sign in error:', e);
         }
     };
 

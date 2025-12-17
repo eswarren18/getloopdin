@@ -1,8 +1,8 @@
 import { useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import { AuthContext } from '../providers/AuthProvider';
-import { useSidebar } from '../providers/SidebarProvider';
+import { AuthContext } from '../providers';
+import { useSidebar } from '../providers';
 
 export function Sidebar() {
     // Redirect to home if not logged in

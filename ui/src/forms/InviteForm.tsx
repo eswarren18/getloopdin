@@ -1,10 +1,10 @@
 import { useState, useContext } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
-import { AuthContext } from '../providers/AuthProvider';
-import { createInvite } from '../services/inviteService';
+import { AuthContext } from '../providers';
+import { createInvite } from '../services';
 import { ErrorDisplay } from '../errors';
-import { InviteCreate } from '../types/invite';
+import { InviteCreate } from '../types';
 
 export default function InviteForm() {
     // Redirect to home if not logged in

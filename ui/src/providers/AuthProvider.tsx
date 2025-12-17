@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, ReactNode } from 'react';
-import { UserResponse } from '../types/user';
+import { UserResponse } from '../types';
 import { authenticate, signOut as signOutApi } from '../services/authService';
 import { LoadingIcon } from '../components';
 
@@ -27,16 +27,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Authenticate user on mount
     useEffect(() => {
-        setIsLoading(true);
-        authenticate().then((result) => {
-            if (result instanceof Error) {
-                setUser(undefined);
+        const checkAuth = async () => {
+            setIsLoading(true);
+            try {
+                const result = await authenticate();
+                setUser(result);
+            } catch (e) {
+                setUser(undefined); // Not logged in or error
+            } finally {
                 setIsLoading(false);
-                return;
             }
-            setUser(result);
-            setIsLoading(false);
-        });
+        };
+        checkAuth();
     }, []);
 
     const signOut = async () => {

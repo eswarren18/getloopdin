@@ -95,10 +95,10 @@ def get_current_user_from_token(
     Returns the User if authenticated, else raises HTTPException.
     """
     if not jwt_payload or "sub" not in jwt_payload:
-        raise HTTPException(status_code=404, detail="Not logged in")
+        raise HTTPException(status_code=401, detail="Not logged in")
     user = db.query(User).filter(User.email == jwt_payload["sub"]).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Not logged in")
+        raise HTTPException(status_code=401, detail="Not logged in")
     return user
 
 

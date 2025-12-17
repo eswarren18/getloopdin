@@ -1,13 +1,13 @@
 import { useContext, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { AuthContext } from '../providers/AuthProvider';
+import { AuthContext } from '../providers';
 
 interface NavProps {
     sidebarCollapsed: boolean;
     setSidebarCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function Nav({ sidebarCollapsed, setSidebarCollapsed }: NavProps) {
+export function Nav({ setSidebarCollapsed }: NavProps) {
     const auth = useContext(AuthContext);
     const user = auth?.user;
     const signOut = auth?.signOut;

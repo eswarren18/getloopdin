@@ -1,4 +1,4 @@
-import { EventCreate, EventOut, ParticipantOut } from '../types/event';
+import { EventCreate, EventOut, ParticipantOut } from '../types';
 
 export const baseUrl = import.meta.env.VITE_API_URL;
 if (!baseUrl) {
@@ -9,23 +9,20 @@ export async function fetchEvents(
     role: 'host' | 'participant',
     time: 'upcoming' | 'past' | 'all'
 ): Promise<EventOut[]> {
-    // Sent GET request to the API
     try {
+        // Send GET request to the API
         const response = await fetch(
             `${baseUrl}/api/private/events/?role=${role}&time=${time}`,
             {
                 credentials: 'include',
             }
         );
-        if (!response.ok)
-            throw new Error(
-                `Failed to fetch ${time} events where the user is a ${role}`
-            );
+        if (!response.ok) throw new Error('Failed to retrieve events.');
 
         // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform from snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const events: EventOut[] = data.map((event: any) => ({
             id: event.id,
             title: event.title,
@@ -33,17 +30,16 @@ export async function fetchEvents(
             startTime: event.start_time,
             endTime: event.end_time,
         }));
+
         return events;
-    } catch (error) {
-        console.error('Unknown error in fetchEvents:', error);
-        throw error;
+    } catch (e) {
+        console.error('Unknown error in fetchEvents:', e);
+        throw e;
     }
 }
 
-export async function createEvent(
-    eventData: EventCreate
-): Promise<EventOut | Error> {
-    // Transform camelCase to snake_case
+export async function createEvent(eventData: EventCreate): Promise<EventOut> {
+    // Transform data to snake_case for API consumption
     const transformedEventData = {
         title: eventData.title,
         description: eventData.description,
@@ -51,8 +47,8 @@ export async function createEvent(
         end_time: eventData.endTime,
     };
 
-    // Send POST request to the API
     try {
+        // Send POST request to the API
         const response = await fetch(`${baseUrl}/api/private/events/`, {
             method: 'POST',
             headers: {
@@ -68,7 +64,7 @@ export async function createEvent(
         // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform from snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const event: EventOut = {
             id: data.id,
             title: data.title,
@@ -76,17 +72,16 @@ export async function createEvent(
             startTime: data.start_time,
             endTime: data.end_time,
         };
+
         return event;
-    } catch (error) {
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }
 
-export async function fetchEventById(
-    eventId: number
-): Promise<EventOut | Error> {
-    // Sent GET request to the API
+export async function fetchEventById(eventId: number): Promise<EventOut> {
     try {
+        // Send GET request to the API
         const response = await fetch(
             `${baseUrl}/api/private/events/${eventId}`,
             {
@@ -94,17 +89,13 @@ export async function fetchEventById(
             }
         );
         if (!response.ok) {
-            const errorMsg =
-                response.status === 404
-                    ? 'Event not found'
-                    : 'Failed to fetch event';
-            throw new Error(errorMsg);
+            throw new Error('Failed to retrieve event.');
         }
 
         // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform from snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const event: EventOut = {
             id: data.id,
             title: data.title,
@@ -112,17 +103,18 @@ export async function fetchEventById(
             startTime: data.start_time,
             endTime: data.end_time,
         };
+
         return event;
-    } catch (error) {
-        return error instanceof Error ? error : new Error('Unknown error');
+    } catch (e) {
+        throw e;
     }
 }
 
 export async function updateEvent(
     eventId: number,
     eventData: EventCreate
-): Promise<EventOut | Error> {
-    // Transform camelCase to snake_case
+): Promise<EventOut> {
+    // Transform data to snake_case for API consumption
     const transformedEventData = {
         title: eventData.title,
         description: eventData.description,
@@ -130,8 +122,8 @@ export async function updateEvent(
         end_time: eventData.endTime,
     };
 
-    // Send PUT request to the API
     try {
+        // Send PUT request to the API
         const response = await fetch(
             `${baseUrl}/api/private/events/${eventId}`,
             {
@@ -144,16 +136,13 @@ export async function updateEvent(
             }
         );
         if (!response.ok) {
-            const errorMsg =
-                response.status === 404
-                    ? 'Event not found'
-                    : 'Failed to update event';
-            throw new Error(errorMsg);
+            throw new Error('Failed to update event.');
         }
+
         // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform from snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const event: EventOut = {
             id: data.id,
             title: data.title,
@@ -161,24 +150,27 @@ export async function updateEvent(
             startTime: data.start_time,
             endTime: data.end_time,
         };
+
         return event;
-    } catch (error) {
-        return new Error('Could not update event details');
+    } catch (e) {
+        throw e;
     }
 }
 
-export async function deleteEvent(eventId: number): Promise<true | Error> {
+export async function deleteEvent(eventId: number): Promise<true> {
+    // Send DELETE request to the API
     try {
         const response = await fetch(
-            `${baseUrl}/*********api/private/events/${eventId}`,
+            `${baseUrl}/api/private/events/${eventId}`,
             {
                 method: 'DELETE',
                 credentials: 'include',
             }
         );
         if (!response.ok) {
-            throw new Error('Failed to delete event');
+            throw new Error('Failed to delete event.');
         }
+
         return true;
     } catch (e) {
         throw e;
@@ -189,22 +181,21 @@ export async function fetchParticipants(
     eventId: number,
     role?: 'host' | 'participant'
 ): Promise<ParticipantOut[]> {
-    // Sent GET request to the API
+    // Send GET request to the API
     try {
         const url = role
             ? `${baseUrl}/api/private/events/${eventId}/participants?role=${role}`
             : `${baseUrl}/api/private/events/${eventId}/participants`;
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error('Failed to fetch participants');
+            throw new Error('Failed to retrieve participants.');
         }
 
         // Transform Response object to JSON
         const data = await response.json();
 
         return data;
-    } catch (error) {
-        console.error('Unknown error in fetchParticipants:', error);
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }

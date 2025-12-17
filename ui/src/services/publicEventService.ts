@@ -1,15 +1,13 @@
-import { EventOut, ParticipantOut } from '../types/event';
+import { EventOut, ParticipantOut } from '../types';
 
 export const baseUrl = import.meta.env.VITE_API_URL;
 if (!baseUrl) {
     throw new Error('VITE_API_URL was not defined');
 }
 
-export async function fetchEventByToken(
-    token: string
-): Promise<EventOut | Error> {
-    // Sent GET request to the API
+export async function fetchEventByToken(token: string): Promise<EventOut> {
     try {
+        // Send GET request to the API
         const response = await fetch(
             `${baseUrl}/api/public/events/token/${token}`,
             {
@@ -17,17 +15,13 @@ export async function fetchEventByToken(
             }
         );
         if (!response.ok) {
-            const errorMsg =
-                response.status === 404
-                    ? 'Event not found'
-                    : 'Failed to fetch event';
-            throw new Error(errorMsg);
+            throw new Error('Failed to fetch event');
         }
 
         // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform from snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const event: EventOut = {
             id: data.id,
             title: data.title,
@@ -35,9 +29,10 @@ export async function fetchEventByToken(
             startTime: data.start_time,
             endTime: data.end_time,
         };
+
         return event;
-    } catch (error) {
-        return error instanceof Error ? error : new Error('Unknown error');
+    } catch (e) {
+        throw e;
     }
 }
 
@@ -46,6 +41,7 @@ export async function fetchParticipantsByToken(
     role?: 'host' | 'participant'
 ): Promise<ParticipantOut[]> {
     try {
+        // Send GET request to the API
         const response = await fetch(
             `${baseUrl}/api/public/events/token/${token}/participants?role=${role}`,
             {
@@ -56,18 +52,19 @@ export async function fetchParticipantsByToken(
             throw new Error('Failed to fetch participants');
         }
 
+        // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform from snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const participants: ParticipantOut[] = data.map((item: any) => ({
             id: item.id,
             name: item.name,
             email: item.email,
             role: item.role,
         }));
+
         return participants;
-    } catch (error) {
-        console.error('Error fetching participants by token:', error);
-        return [];
+    } catch (e) {
+        throw e;
     }
 }

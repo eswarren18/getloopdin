@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
 
-import { AuthContext } from '../providers/AuthProvider';
+import { AuthContext } from '../providers';
 
 export default function Home() {
     // Redirect to events if logged in (common + acceptable pattern)

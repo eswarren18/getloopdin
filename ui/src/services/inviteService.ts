@@ -1,4 +1,4 @@
-import { InviteCreate, InviteOut } from '../types/invite';
+import { InviteCreate, InviteOut } from '../types';
 
 export const baseUrl = import.meta.env.VITE_API_URL;
 if (!baseUrl) {
@@ -7,16 +7,16 @@ if (!baseUrl) {
 
 export async function createInvite(
     inviteData: InviteCreate
-): Promise<InviteOut | Error> {
-    // Transform camelCase to snake_case
+): Promise<InviteOut> {
+    // Transform data to snake_case for API consumption
     const transformedInviteData = {
         email: inviteData.email,
         role: inviteData.role,
         event_id: inviteData.eventId,
     };
 
-    // Send POST request to the API
     try {
+        // Send POST request to the API
         const response = await fetch(`${baseUrl}/api/invites/`, {
             method: 'POST',
             headers: {
@@ -26,19 +26,13 @@ export async function createInvite(
             credentials: 'include',
         });
         if (!response.ok) {
-            let errorDetail =
-                'Could not create invite. Please try again later.';
-            const errorData = await response.json();
-            if (errorData && errorData.detail) {
-                errorDetail = errorData.detail;
-            }
-            return new Error(errorDetail);
+            throw new Error('Failed to create invite');
         }
 
         // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform from snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const invite: InviteOut = {
             email: data.email,
             event: {
@@ -54,12 +48,10 @@ export async function createInvite(
             token: data.token,
             userName: data.user_name,
         };
+
         return invite;
-    } catch (error) {
-        console.error('Error in createInvite:', error);
-        return error instanceof Error
-            ? error
-            : new Error('Could not create invite. Please try again later.');
+    } catch (e) {
+        throw e;
     }
 }
 
@@ -74,18 +66,20 @@ export async function fetchInvites(
         if (status) params.append('status', status);
         if (eventId !== undefined) params.append('event_id', String(eventId));
         if (userId !== undefined) params.append('user_id', String(userId));
+
+        // Send GET request to the API
         const response = await fetch(
-            `${baseUrl}/api/invites/?${params.toString()}`,
+            `${baseUrl}/***api/invites/?${params.toString()}`,
             {
                 credentials: 'include',
             }
         );
-        if (!response.ok) throw new Error('Failed to fetch invites');
+        if (!response.ok) throw new Error('Failed to retrieve invites.');
 
         // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform from snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const invites: InviteOut[] = data.map((invite: any) => ({
             email: invite.email,
             event: {
@@ -103,9 +97,8 @@ export async function fetchInvites(
         }));
 
         return invites;
-    } catch (error) {
-        console.error(`Error in fetchInvites:`, error);
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }
 
@@ -114,6 +107,7 @@ export async function respondToInvite(
     status: 'accepted' | 'declined'
 ): Promise<InviteOut> {
     try {
+        // Send PUT request to the API
         const response = await fetch(`${baseUrl}/api/invites/${token}`, {
             method: 'PUT',
             headers: {
@@ -123,14 +117,13 @@ export async function respondToInvite(
             body: JSON.stringify({ status }),
         });
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed to respond to invite: ${errorText}`);
+            throw new Error('Failed to RSVP.');
         }
 
         // Transform Response object to JSON
         const data = await response.json();
 
-        // Transform snake_case to camelCase
+        // Transform data to camelCase for UI consumption
         const invite: InviteOut = {
             email: data.email,
             event: {
@@ -148,8 +141,7 @@ export async function respondToInvite(
         };
 
         return invite;
-    } catch (error) {
-        console.error('Error in respondToInvite:', error);
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }

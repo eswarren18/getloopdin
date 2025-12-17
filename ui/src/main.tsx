@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { AuthProvider } from './providers/AuthProvider';
+import { AuthProvider } from './providers';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { Event, Events, Home, Invites } from './pages';
