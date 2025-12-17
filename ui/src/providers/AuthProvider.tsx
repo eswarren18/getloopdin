@@ -59,7 +59,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 signOut,
             }}
         >
-            {isLoading ? <LoadingIcon /> : children}
+            {isLoading ? null : children}
         </AuthContext.Provider>
     );
 }

@@ -69,7 +69,7 @@ export async function fetchInvites(
 
         // Send GET request to the API
         const response = await fetch(
-            `${baseUrl}/***api/invites/?${params.toString()}`,
+            `${baseUrl}/api/invites/?${params.toString()}`,
             {
                 credentials: 'include',
             }

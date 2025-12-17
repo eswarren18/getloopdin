@@ -10,6 +10,7 @@ import {
     ConfirmDelete,
     ErrorSuccessAlert,
     EventFeaturesBar,
+    LoadingIcon,
 } from '../components';
 import { AuthContext, useSidebar } from '../providers';
 import {
@@ -43,13 +44,16 @@ export default function Event() {
     const [event, setEvent] = useState<EventOut | null>(null);
     const [hosts, setHosts] = useState<ParticipantOut[]>([]);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [dataLoading, setDataLoading] = useState<boolean>(true);
 
     // Fetch event and host details
     const fetchData = async () => {
+        setDataLoading(true);
         try {
-            // Call services to fetch API data
             let eventData;
             let hostData;
+
+            // Call services to fetch API data
             if (eventId) {
                 eventData = await fetchEventById(Number(eventId));
                 hostData = await fetchParticipants(Number(eventId), 'host');
@@ -59,6 +63,7 @@ export default function Event() {
             } else {
                 setError('No event ID or token provided');
                 console.warn('No event ID or token provided');
+                setDataLoading(false);
                 return;
             }
 
@@ -68,6 +73,8 @@ export default function Event() {
         } catch (e: any) {
             setError(e?.message || 'Failed to retrieve event.');
             console.error('Fetch event error:', e);
+        } finally {
+            setDataLoading(false);
         }
     };
 
@@ -109,22 +116,27 @@ export default function Event() {
         fetchData();
     }, [eventId, token]);
 
-    if (!event)
+    if (auth?.isLoading || dataLoading) {
+        return <LoadingIcon />;
+    }
+
+    if (!event) {
         return (
             <NotFound
                 headline="Nothing to see here"
                 message="The event may have been deleted, or the link is incorrect."
             />
         );
+    }
 
     // Format start and end times to display
-    const formattedStart = event.startTime
+    const formattedStart = event?.startTime
         ? new Date(event.startTime).toLocaleString('en-US', {
               dateStyle: 'medium',
               timeStyle: 'short',
           })
         : '';
-    const formattedEnd = event.endTime
+    const formattedEnd = event?.endTime
         ? new Date(event.endTime).toLocaleString('en-US', {
               dateStyle: 'medium',
               timeStyle: 'short',
@@ -176,7 +188,7 @@ export default function Event() {
                             {/* Title */}
                             <div className="flex items-center mb-2">
                                 <h1 className="text-2xl font-bold mr-6">
-                                    {event.title}
+                                    {event?.title}
                                 </h1>
                                 {hosts.some(
                                     (host) => host.id === auth?.user?.id
@@ -187,7 +199,7 @@ export default function Event() {
                                             className="rounded hover:bg-cyan-200 hover:text-cyan-800 p-1"
                                             onClick={() =>
                                                 navigate(
-                                                    `/event-form/${event.id}`
+                                                    `/event-form/${event?.id}`
                                                 )
                                             }
                                         >
@@ -232,7 +244,7 @@ export default function Event() {
                                 )}
                             </div>
                             {/* Description */}
-                            {event.description ? (
+                            {event?.description ? (
                                 <div className="mb-6">{event.description}</div>
                             ) : (
                                 <div className="text-gray-500 py-2 mb-4">

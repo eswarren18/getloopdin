@@ -109,148 +109,158 @@ export default function EventForm() {
     }, [isEdit, eventId]);
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="flex flex-col w-3/10 mx-auto my-8"
-        >
-            <h1 className="font-bold text-2xl mb-1">
-                {isEdit ? 'Edit Event' : 'Create an Event!'}
-            </h1>
-            <p className="text-sm font-normal text-gray-600 mb-4">
-                Event Details
-            </p>
-            <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                >
-                    <path
-                        fillRule="evenodd"
-                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                        clipRule="evenodd"
+        <div className="flex min-h-screen bg-gray-50">
+            <form
+                onSubmit={handleSubmit}
+                className="flex flex-col w-3/10 mx-auto my-8"
+            >
+                <h1 className="font-bold text-2xl mb-1">
+                    {isEdit ? 'Edit Event' : 'Create an Event!'}
+                </h1>
+                <p className="text-sm font-normal text-gray-600 mb-4">
+                    Event Details
+                </p>
+                <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="h-5 w-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                        />
+                    </svg>
+
+                    <input
+                        autoComplete="title"
+                        className="pl-2 outline-none border-none w-full placeholder-gray-400"
+                        id="title"
+                        name="title"
+                        onChange={(e) =>
+                            setForm({ ...form, title: e.target.value })
+                        }
+                        placeholder="Title*"
+                        type="text"
+                        value={form.title}
+                        disabled={loading}
                     />
-                </svg>
-                <input
-                    autoComplete="title"
-                    className="pl-2 outline-none border-none w-full placeholder-gray-400"
-                    id="title"
-                    name="title"
-                    onChange={(e) =>
-                        setForm({ ...form, title: e.target.value })
-                    }
-                    placeholder="Title*"
-                    type="text"
-                    value={form.title}
-                    disabled={loading}
-                />
-            </div>
-            <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                >
-                    <path
-                        fillRule="evenodd"
-                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                        clipRule="evenodd"
+                </div>
+                <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="h-5 w-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                        />
+                    </svg>
+
+                    <textarea
+                        autoComplete="description"
+                        className="pl-2 outline-none border-none w-full placeholder-gray-400"
+                        id="description"
+                        maxLength={200}
+                        name="description"
+                        onChange={(e) =>
+                            setForm({ ...form, description: e.target.value })
+                        }
+                        placeholder="Description"
+                        value={form.description}
+                        disabled={loading}
+                    ></textarea>
+                </div>
+                <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="h-5 w-5 mr-2"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                        />
+                    </svg>
+                    <DatePicker
+                        selected={form.startTime}
+                        onChange={(date: Date | null) =>
+                            setForm({ ...form, startTime: date })
+                        }
+                        openToDate={new Date()}
+                        showTimeSelect
+                        timeFormat="h:mm aa"
+                        timeIntervals={15}
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        wrapperClassName="w-full"
+                        className="w-full placeholder-gray-400"
+                        placeholderText="Start Time*"
+                        disabled={loading}
                     />
-                </svg>
-                <textarea
-                    autoComplete="description"
-                    className="pl-2 outline-none border-none w-full placeholder-gray-400"
-                    id="description"
-                    maxLength={200}
-                    name="description"
-                    onChange={(e) =>
-                        setForm({ ...form, description: e.target.value })
-                    }
-                    placeholder="Description"
-                    value={form.description}
-                    disabled={loading}
-                ></textarea>
-            </div>
-            <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="h-5 w-5 mr-2"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                </div>
+                <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="h-5 w-5 mr-2"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                        />
+                    </svg>
+                    <DatePicker
+                        selected={form.endTime}
+                        onChange={(date: Date | null) =>
+                            setForm({ ...form, endTime: date })
+                        }
+                        showTimeSelect
+                        timeFormat="h:mm aa"
+                        timeIntervals={15}
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        wrapperClassName="w-full"
+                        className="w-full placeholder-gray-400"
+                        placeholderText="End Time*"
+                        disabled={loading}
                     />
-                </svg>
-                <DatePicker
-                    selected={form.startTime}
-                    onChange={(date: Date | null) =>
-                        setForm({ ...form, startTime: date })
-                    }
-                    openToDate={new Date()}
-                    showTimeSelect
-                    timeFormat="h:mm aa"
-                    timeIntervals={15}
-                    dateFormat="MMMM d, yyyy h:mm aa"
-                    wrapperClassName="w-full"
-                    className="w-full placeholder-gray-400"
-                    placeholderText="Start Time*"
-                    disabled={loading}
-                />
-            </div>
-            <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="h-5 w-5 mr-2"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-                    />
-                </svg>
-                <DatePicker
-                    selected={form.endTime}
-                    onChange={(date: Date | null) =>
-                        setForm({ ...form, endTime: date })
-                    }
-                    showTimeSelect
-                    timeFormat="h:mm aa"
-                    timeIntervals={15}
-                    dateFormat="MMMM d, yyyy h:mm aa"
-                    wrapperClassName="w-full"
-                    className="w-full placeholder-gray-400"
-                    placeholderText="End Time*"
-                    disabled={loading}
-                />
-            </div>
-            {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-            <div className="flex gap-4 mt-4">
-                <button
-                    type="button"
-                    className="basis-1/2 bg-gray-200 px-3 py-1 rounded font-medium hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200 cursor-pointer"
-                    onClick={() => navigate('/events')}
-                >
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    className="basis-1/2 bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300 cursor-pointer"
-                    disabled={loading}
-                >
-                    {isEdit ? 'Update Event' : 'Create Event'}
-                </button>
-            </div>
-        </form>
+                </div>
+                {error && (
+                    <div className="text-red-600 text-sm mb-2">{error}</div>
+                )}
+                <div className="flex gap-4 mt-4">
+                    <button
+                        type="button"
+                        className="basis-1/2 bg-gray-200 px-3 py-1 rounded font-medium hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200 cursor-pointer"
+                        onClick={() => navigate('/events')}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        className="basis-1/2 bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300 cursor-pointer"
+                        disabled={loading}
+                    >
+                        {isEdit ? 'Update Event' : 'Create Event'}
+                    </button>
+                </div>
+            </form>
+        </div>
     );
 }

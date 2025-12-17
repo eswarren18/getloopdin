@@ -56,88 +56,91 @@ export default function InviteForm() {
     };
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="flex flex-col w-3/10 mx-auto my-8"
-        >
-            <h1 className="font-bold text-2xl mb-1">Invite a friend!</h1>
-            <p className="text-sm font-normal text-gray-600 mb-4">
-                Invite Details
-            </p>
-            <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="size-5"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+        <div className="flex min-h-screen bg-gray-50">
+            <form
+                onSubmit={handleSubmit}
+                className="flex flex-col w-3/10 mx-auto my-8"
+            >
+                <h1 className="font-bold text-2xl mb-1">Invite a friend!</h1>
+                <p className="text-sm font-normal text-gray-600 mb-4">
+                    Invite Details
+                </p>
+                <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+                        />
+                    </svg>
+                    <input
+                        autoComplete="email"
+                        className="pl-2 outline-none border-none w-full placeholder-gray-400"
+                        id="email"
+                        name="email"
+                        onChange={(e) =>
+                            setForm({ ...form, email: e.target.value })
+                        }
+                        placeholder="Email*"
+                        type="text"
+                        value={form.email}
                     />
-                </svg>
-                <input
-                    autoComplete="email"
-                    className="pl-2 outline-none border-none w-full placeholder-gray-400"
-                    id="email"
-                    name="email"
-                    onChange={(e) =>
-                        setForm({ ...form, email: e.target.value })
-                    }
-                    placeholder="Email*"
-                    type="text"
-                    value={form.email}
-                />
-            </div>
-            <div className="flex items-center border-2 py-2 px-3 rounded">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="size-5"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-                    />
-                </svg>
-                <select
-                    autoComplete="role"
-                    id="role"
-                    name="role"
-                    className="outline-none border-none w-full pl-1"
-                    value={form.role}
-                    onChange={(e) => setForm({ ...form, role: e.target.value })}
-                >
-                    <option value="" disabled hidden>
-                        Role*
-                    </option>
-                    <option value="host">Host</option>
-                    <option value="participant">Participant</option>
-                </select>
-            </div>
-            {error && <ErrorDisplay message={error} className="my-2" />}
-            <div className="flex gap-4 mt-4">
-                <button
-                    type="button"
-                    className="basis-1/2 bg-gray-200 px-3 py-1 rounded font-medium hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200 cursor-pointer"
-                    onClick={() => navigate(`/events/${eventId}`)}
-                >
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    className="basis-1/2 bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300 cursor-pointer"
-                >
-                    Invite
-                </button>
-            </div>
-        </form>
+                </div>
+                <div className="flex items-center border-2 py-2 px-3 rounded border-black text-gray-400">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="h-5 w-5 text-black"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
+                        />
+                    </svg>
+
+                    <select
+                        autoComplete="role"
+                        id="role"
+                        name="role"
+                        className="outline-none border-none w-full pl-1"
+                        value={form.role}
+                        onChange={(e) =>
+                            setForm({ ...form, role: e.target.value })
+                        }
+                    >
+                        <option value="">Role*</option>
+                        <option value="host">Host</option>
+                        <option value="participant">Participant</option>
+                    </select>
+                </div>
+                {error && <ErrorDisplay message={error} className="my-2" />}
+                <div className="flex gap-4 mt-4">
+                    <button
+                        type="button"
+                        className="basis-1/2 bg-gray-200 px-3 py-1 rounded font-medium hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200 cursor-pointer"
+                        onClick={() => navigate(`/events/${eventId}`)}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        className="basis-1/2 bg-cyan-600 text-white px-3 py-1 rounded font-medium hover:bg-cyan-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-300 cursor-pointer"
+                    >
+                        Invite
+                    </button>
+                </div>
+            </form>
+        </div>
     );
 }
