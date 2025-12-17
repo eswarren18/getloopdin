@@ -1,9 +1,29 @@
-export function LoadingIcon() {
+import { useEffect, useState } from 'react';
+
+interface LoadingIconProps {
+    delay?: number; // milliseconds
+}
+
+export function LoadingIcon({ delay = 0 }: LoadingIconProps) {
+    const [show, setShow] = useState(delay === 0);
+
+    useEffect(() => {
+        if (delay === 0) {
+            setShow(true);
+            return;
+        }
+        setShow(false);
+        const timer = setTimeout(() => setShow(true), delay);
+        return () => clearTimeout(timer);
+    }, [delay]);
+
+    if (!show) return null;
+
     return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="w-full flex justify-center items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="flex flex-col items-center">
                 <svg
-                    className="animate-spin h-20 w-20 text-cyan-500"
+                    className="animate-spin h-20 w-20 text-cyan-300"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"

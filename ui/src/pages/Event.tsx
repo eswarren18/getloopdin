@@ -40,11 +40,11 @@ export default function Event() {
     const showErrorSuccessAlert = location.state?.showErrorSuccessAlert;
     const navigate = useNavigate();
     const collapsed = useSidebar();
+    const [dataLoading, setDataLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [event, setEvent] = useState<EventOut | null>(null);
     const [hosts, setHosts] = useState<ParticipantOut[]>([]);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const [dataLoading, setDataLoading] = useState<boolean>(true);
 
     // Fetch event and host details
     const fetchData = async () => {
@@ -117,7 +117,7 @@ export default function Event() {
     }, [eventId, token]);
 
     if (auth?.isLoading || dataLoading) {
-        return <LoadingIcon />;
+        return <LoadingIcon delay={500} />;
     }
 
     if (!event) {

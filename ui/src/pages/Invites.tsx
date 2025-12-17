@@ -4,7 +4,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../providers';
 import { fetchInvites, respondToInvite } from '../services';
 import { InviteOut } from '../types';
-import { ErrorSuccessAlert } from '../components';
+import { ErrorSuccessAlert, LoadingIcon } from '../components';
+import { set } from 'date-fns';
 
 export default function Invites() {
     // Redirect to home if not logged in
@@ -15,11 +16,13 @@ export default function Invites() {
 
     // Page state and hooks
     const navigate = useNavigate();
+    const [dataLoading, setDataLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [invites, setInvites] = useState<InviteOut[]>([]);
 
     // Fetch invite details
     const fetchData = async () => {
+        setDataLoading(true);
         try {
             // Call services to fetch API data
             const data = await fetchInvites('pending');
@@ -29,6 +32,8 @@ export default function Invites() {
         } catch (e: any) {
             setError(e?.message || 'Failed to fetch invites.');
             console.error('Fetch invites error:', e);
+        } finally {
+            setDataLoading(false);
         }
     };
 
@@ -55,6 +60,10 @@ export default function Invites() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    if (auth?.isLoading || dataLoading) {
+        return <LoadingIcon delay={500} />;
+    }
 
     return (
         <>

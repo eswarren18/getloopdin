@@ -5,7 +5,7 @@ import { AuthContext } from '../providers';
 import { fetchEvents } from '../services';
 import { EventOut } from '../types';
 import '../styles/main-content-container.css';
-import { ErrorSuccessAlert } from '../components';
+import { ErrorSuccessAlert, LoadingIcon } from '../components';
 
 export default function Events() {
     // Redirect to home if not logged in
@@ -16,9 +16,9 @@ export default function Events() {
 
     // Page state and hooks
     const navigate = useNavigate();
+    const [dataLoading, setDataLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [events, setEvents] = useState<EventOut[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
     const [roleFilter, setRoleFilter] = useState<'host' | 'participant'>(
         'participant'
     );
@@ -28,18 +28,18 @@ export default function Events() {
 
     // Fetch event details
     const fetchData = async () => {
+        setDataLoading(true);
         try {
             // Call services to fetch API data
-            setLoading(true);
             const data = await fetchEvents(roleFilter, timeFilter);
 
             // Update state with API data
             setEvents(data);
-            setLoading(false);
         } catch (e: any) {
             setError(e?.message || 'Failed to retrieve events.');
             console.error(e);
-            setLoading(false);
+        } finally {
+            setDataLoading(false);
         }
     };
 
@@ -47,6 +47,10 @@ export default function Events() {
     useEffect(() => {
         fetchData();
     }, [roleFilter, timeFilter]);
+
+    if (auth?.isLoading || dataLoading) {
+        return <LoadingIcon delay={500} />;
+    }
 
     return (
         <>
@@ -103,11 +107,7 @@ export default function Events() {
                         </div>
                     </div>
                     <div className="mt-2">
-                        {loading ? (
-                            <div className="text-center text-gray-500 py-8">
-                                Loading...
-                            </div>
-                        ) : events.length === 0 ? (
+                        {events.length === 0 ? (
                             <div className="text-center text-gray-400 py-8">
                                 No events found.
                             </div>
