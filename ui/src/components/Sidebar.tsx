@@ -23,7 +23,7 @@ export function Sidebar() {
 
     return (
         <div
-            className={`${sidebarStyle} mt-2 h-full fixed left-0 gap-1 bg-white shadow-md flex flex-col transition-all duration-300 z-40`}
+            className={`${sidebarStyle} fixed left-0 top-16 h-[calc(100vh-4rem)] gap-1 bg-white shadow-md flex flex-col transition-all duration-300 z-40`}
         >
             <button
                 className={`cursor-pointer font-medium text-xl flex items-center mt-2 gap-2 ${buttonStyle} py-3 transition-colors duration-150

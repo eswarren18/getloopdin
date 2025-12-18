@@ -14,7 +14,7 @@ export function Nav({ setSidebarCollapsed }: NavProps) {
     const location = useLocation();
 
     return (
-        <nav className="flex fixed w-full p-4 border-b border-gray-200 items-center z-50 bg-white">
+        <nav className="fixed top-0 left-0 w-full h-16 flex items-center px-4 border-b border-gray-200 bg-white z-50">
             <div className="flex gap-4 items-center">
                 {/* Hamburger toggle button */}
                 {user && (

@@ -25,19 +25,19 @@ export default function App() {
                 setSidebarCollapsed={setSidebarCollapsed}
             />
             <SidebarProvider collapsed={sidebarCollapsed}>
-                <div className="pt-16">
+                <div className="flex pt-16 h-screen overflow-hidden">
                     {user && <Sidebar />}
-                    <div
-                        className={`transition-all duration-300 ${
+                    <main
+                        className={`flex-1 overflow-y-auto transition-all duration-300 ${
                             user
                                 ? sidebarCollapsed
                                     ? 'ml-16'
                                     : 'ml-[20%]'
-                                : 'mx-auto'
+                                : ''
                         }`}
                     >
                         <Outlet />
-                    </div>
+                    </main>
                 </div>
             </SidebarProvider>
         </>

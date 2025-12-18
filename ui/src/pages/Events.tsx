@@ -4,7 +4,6 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../providers';
 import { fetchEvents } from '../services';
 import { EventOut } from '../types';
-import '../styles/main-content-container.css';
 import { ErrorSuccessAlert, LoadingIcon } from '../components';
 
 export default function Events() {
@@ -55,7 +54,7 @@ export default function Events() {
     return (
         <>
             {error && <ErrorSuccessAlert message={error} type="error" />}
-            <div className="flex bg-gray-50 min-h-screen z-10">
+            <div className="flex bg-gray-50 min-h-full z-10">
                 <div className="w-5/6 mx-auto mt-8">
                     <div className="flex flex-col gap-4 mt-4 mb-6">
                         <div className="flex justify-between items-center">

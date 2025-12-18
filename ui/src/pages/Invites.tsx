@@ -68,7 +68,7 @@ export default function Invites() {
     return (
         <>
             {error && <ErrorSuccessAlert message={error} type="error" />}
-            <div className="flex bg-gray-50 min-h-screen z-10">
+            <div className="flex bg-gray-50 min-h-full z-10">
                 <div className="flex flex-col gap-4 w-4/5 mx-auto mt-8">
                     <h2 className="text-2xl font-bold mt-4 mb-2">Invites</h2>
                     {invites.length === 0 ? (

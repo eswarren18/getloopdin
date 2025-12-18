@@ -33,8 +33,8 @@ export function EventFeaturesBar({
     >('participants');
 
     return (
-        <div className="flex flex-col w-4/5 mt-8 mb-6">
-            <div className="w-full border border-gray-200 mb-4" />
+        <div className="flex flex-col w-5/6 mt-8 mb-6">
+            <div className="flex w-full border border-gray-200 mb-4" />
             <div className="flex gap-4 mb-4 justify-center">
                 {/* Participants */}
                 <div>
