@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { Nav } from './components';
 import { Sidebar } from './components';

@@ -37,7 +37,7 @@ export function EventInvites({ eventId }: EventParticipantsProps) {
     }, [eventId, selectedStatus]);
 
     return (
-        <div className="w-4/5 mt-6 justify-center mx-auto">
+        <div className="w-full mt-6 justify-center mx-auto">
             <h2 className="text-2xl font-bold mb-2">Invites</h2>
             {error ? (
                 <ErrorDisplay message={error} />
