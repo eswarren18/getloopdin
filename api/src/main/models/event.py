@@ -6,6 +6,7 @@ the database, including columns and constraints.
 """
 
 from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, Text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import backref, relationship
 from src.main.database import Base
 
@@ -17,6 +18,7 @@ class Event(Base):
     description = Column(Text, nullable=True)
     start_time = Column(TIMESTAMP(timezone=True), nullable=False)
     end_time = Column(TIMESTAMP(timezone=True), nullable=False)
+    address = Column(JSONB, nullable=False)
     participants = relationship(
         "Participant", back_populates="event", cascade="all, delete-orphan"
     )

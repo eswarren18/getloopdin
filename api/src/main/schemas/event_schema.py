@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 
 class EventBase(BaseModel):
+    address: dict
     description: Optional[str] = None
     end_time: datetime
     start_time: datetime

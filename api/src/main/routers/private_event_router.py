@@ -33,10 +33,11 @@ def create_event(
     """
     # Create the new event from the user event details
     new_event = Event(
-        title=event_details.title,
+        address=event_details.address,
         description=event_details.description,
-        start_time=event_details.start_time,
         end_time=event_details.end_time,
+        start_time=event_details.start_time,
+        title=event_details.title,
     )
     db.add(new_event)
     db.commit()
@@ -237,10 +238,11 @@ def update_event(
         )
 
     # Update the event details
-    db_event.title = event_data.title
+    db_event.address = event_data.address
     db_event.description = event_data.description
-    db_event.start_time = event_data.start_time
     db_event.end_time = event_data.end_time
+    db_event.start_time = event_data.start_time
+    db_event.title = event_data.title
     db.commit()
     db.refresh(db_event)
 

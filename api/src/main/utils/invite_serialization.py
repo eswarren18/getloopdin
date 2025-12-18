@@ -7,6 +7,7 @@ def serialize_inviteout(invite, db):
     serialized_event = None
     if event:
         serialized_event = {
+            "address": event.address,
             "description": event.description,
             "end_time": event.end_time,
             "id": event.id,
