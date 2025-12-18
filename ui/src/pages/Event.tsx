@@ -12,7 +12,7 @@ import {
     EventFeaturesBar,
     LoadingIcon,
 } from '../components';
-import { AuthContext, useSidebar } from '../providers';
+import { AuthContext } from '../providers';
 import {
     deleteEvent,
     fetchEventById,
@@ -39,7 +39,6 @@ export default function Event() {
     const location = useLocation();
     const showErrorSuccessAlert = location.state?.showErrorSuccessAlert;
     const navigate = useNavigate();
-    const collapsed = useSidebar();
     const [dataLoading, setDataLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [event, setEvent] = useState<EventOut | null>(null);
