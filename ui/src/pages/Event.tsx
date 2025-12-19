@@ -312,7 +312,7 @@ export default function Event() {
                                             />
                                         </svg>
                                         <div className="text-lg">
-                                            {event?.address.formattedAddress}
+                                            {event?.address}
                                         </div>
                                     </div>
                                     {/* Hosts */}

@@ -45,7 +45,7 @@ export function Autocomplete({
 
     // Handle user selection
     const handleSelect = (item: any) => {
-        setInput(item.formattedAddress || item.label || item.name || '');
+        setInput(item);
         setSuggestions([]);
         setShowDropdown(false);
         onSelect(item);
@@ -74,9 +74,7 @@ export function Autocomplete({
                             className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
                             onClick={() => handleSelect(item)}
                         >
-                            {renderSuggestion
-                                ? renderSuggestion(item)
-                                : item.label || item.name || item}
+                            {renderSuggestion ? renderSuggestion(item) : item}
                         </li>
                     ))}
                 </ul>

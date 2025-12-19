@@ -10,7 +10,6 @@ import {
     fetchEventById,
     updateEvent,
 } from '../services/privateEventService';
-import { Address } from '../types';
 import { ErrorDisplay } from '../errors';
 
 export default function EventForm() {
@@ -28,7 +27,7 @@ export default function EventForm() {
     const [form, setForm] = useState<{
         title: string;
         description: string;
-        address: Address | null;
+        address: string | null;
         startTime: Date | null;
         endTime: Date | null;
     }>({
@@ -58,16 +57,11 @@ export default function EventForm() {
 
     // Handle autocomplete address selection
     const handleAutocomplete = async (query: string) => {
-        const res = await fetch(
+        const result = await fetch(
             `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
         );
-        const data = await res.json();
-        return data.map((item: any) => ({
-            formattedAddress: item.display_name,
-            lat: parseFloat(item.lat),
-            lon: parseFloat(item.lon),
-            placeId: item.osm_id,
-        }));
+        const data = await result.json();
+        return data.map((item: any) => item.display_name);
     };
 
     // Handle form submission
@@ -192,10 +186,10 @@ export default function EventForm() {
                                 setForm({ ...form, address: place })
                             }
                             placeholder="Address*"
-                            renderSuggestion={(item) => (
-                                <span>{item.formattedAddress}</span>
+                            renderSuggestion={(item: string) => (
+                                <span>{item}</span>
                             )}
-                            value={form.address?.formattedAddress || ''}
+                            value={form.address || ''}
                         />
                     </div>
                 </div>
@@ -214,7 +208,6 @@ export default function EventForm() {
                             d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
                         />
                     </svg>
-
                     <textarea
                         autoComplete="description"
                         className="pl-2 outline-none border-none w-full placeholder-gray-400"

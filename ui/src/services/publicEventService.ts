@@ -23,11 +23,12 @@ export async function fetchEventByToken(token: string): Promise<EventOut> {
 
         // Transform data to camelCase for UI consumption
         const event: EventOut = {
-            id: data.id,
-            title: data.title,
+            address: data.address,
             description: data.description,
-            startTime: data.start_time,
             endTime: data.end_time,
+            id: data.id,
+            startTime: data.start_time,
+            title: data.title,
         };
 
         return event;
