@@ -10,6 +10,8 @@ import {
     fetchEventById,
     updateEvent,
 } from '../services/privateEventService';
+import { Address } from '../types';
+import { ErrorDisplay } from '../errors';
 
 export default function EventForm() {
     // Redirect to home if not logged in
@@ -23,12 +25,18 @@ export default function EventForm() {
     const { eventId } = useParams<{ eventId?: string }>();
     const isEdit = !!eventId;
     const [error, setError] = useState('');
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<{
+        title: string;
+        description: string;
+        address: Address | null;
+        startTime: Date | null;
+        endTime: Date | null;
+    }>({
         title: '',
         description: '',
-        address: null as any,
-        startTime: null as Date | null,
-        endTime: null as Date | null,
+        address: null,
+        startTime: null,
+        endTime: null,
     });
     const [loading, setLoading] = useState(isEdit);
 
@@ -37,19 +45,13 @@ export default function EventForm() {
         if (isEdit && eventId) {
             setLoading(true);
             const result = await fetchEventById(Number(eventId));
-            if (result instanceof Error) {
-                setError(result.message);
-            } else {
-                setForm({
-                    title: result.title ?? '',
-                    description: result.description ?? '',
-                    address: result.address ?? null,
-                    startTime: result.startTime
-                        ? new Date(result.startTime)
-                        : null,
-                    endTime: result.endTime ? new Date(result.endTime) : null,
-                });
-            }
+            setForm({
+                title: result.title ?? '',
+                description: result.description ?? '',
+                address: result.address ?? null,
+                startTime: result.startTime ? new Date(result.startTime) : null,
+                endTime: result.endTime ? new Date(result.endTime) : null,
+            });
             setLoading(false);
         }
     };
@@ -99,7 +101,6 @@ export default function EventForm() {
                 startTime: form.startTime.toISOString(),
                 endTime: form.endTime.toISOString(),
             };
-            console.log('Payload in EventForm:', payload);
             if (isEdit && eventId) {
                 // Update event
                 await updateEvent(Number(eventId), payload);
@@ -140,14 +141,15 @@ export default function EventForm() {
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="h-5 w-5"
+                        className="size-5 shrink-0"
                     >
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                            d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
                         />
                     </svg>
+
                     <input
                         autoComplete="title"
                         className="pl-2 outline-none border-none w-full placeholder-gray-400"
@@ -168,7 +170,7 @@ export default function EventForm() {
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                         stroke="currentColor"
                         className="h-5 w-5"
                     >
@@ -193,6 +195,7 @@ export default function EventForm() {
                             renderSuggestion={(item) => (
                                 <span>{item.formattedAddress}</span>
                             )}
+                            value={form.address?.formattedAddress || ''}
                         />
                     </div>
                 </div>
@@ -287,9 +290,7 @@ export default function EventForm() {
                         disabled={loading}
                     />
                 </div>
-                {error && (
-                    <div className="text-red-600 text-sm mb-2">{error}</div>
-                )}
+                {error && <ErrorDisplay message={error} />}
                 <div className="flex gap-4 mt-4">
                     <button
                         type="button"

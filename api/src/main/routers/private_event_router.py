@@ -33,7 +33,7 @@ def create_event(
     """
     # Create the new event from the user event details
     new_event = Event(
-        address=event_details.address.model_dump(),
+        address=event_details.address,
         description=event_details.description,
         end_time=event_details.end_time,
         start_time=event_details.start_time,
@@ -238,7 +238,7 @@ def update_event(
         )
 
     # Update the event details
-    db_event.address = event_data.address.model_dump()
+    db_event.address = event_data.address
     db_event.description = event_data.description
     db_event.end_time = event_data.end_time
     db_event.start_time = event_data.start_time

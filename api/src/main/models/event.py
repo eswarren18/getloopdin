@@ -18,7 +18,7 @@ class Event(Base):
     description = Column(Text, nullable=True)
     start_time = Column(TIMESTAMP(timezone=True), nullable=False)
     end_time = Column(TIMESTAMP(timezone=True), nullable=False)
-    address = Column(JSONB, nullable=False)
+    address = Column(String, nullable=False)
     participants = relationship(
         "Participant", back_populates="event", cascade="all, delete-orphan"
     )

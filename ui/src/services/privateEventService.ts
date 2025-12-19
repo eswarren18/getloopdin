@@ -18,10 +18,10 @@ export async function fetchEvents(
             }
         );
         if (!response.ok) throw new Error('Failed to retrieve events.');
-
+        console.log('response', response);
         // Transform Response object to JSON
         const data = await response.json();
-
+        console.log('data', data);
         // Transform data to camelCase for UI consumption
         const events: EventOut[] = data.map((event: any) => ({
             address: {
@@ -58,10 +58,6 @@ export async function createEvent(eventData: EventCreate): Promise<EventOut> {
         start_time: eventData.startTime,
         title: eventData.title,
     };
-    console.log(
-        'transformed data in privateEventService:',
-        transformedEventData
-    );
     try {
         // Send POST request to the API
         const response = await fetch(`${baseUrl}/api/private/events/`, {
@@ -72,10 +68,7 @@ export async function createEvent(eventData: EventCreate): Promise<EventOut> {
             body: JSON.stringify(transformedEventData),
             credentials: 'include',
         });
-        if (!response.ok) {
-            console.log('here');
-            throw new Error('Failed to create event.');
-        }
+        if (!response.ok) throw new Error('Failed to create event.');
 
         // Transform Response object to JSON
         const data = await response.json();

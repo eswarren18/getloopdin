@@ -5,6 +5,7 @@ interface AutocompleteProps {
     onSelect: (item: any) => void;
     placeholder?: string;
     renderSuggestion?: (item: any) => React.ReactNode;
+    value?: string;
 }
 
 export function Autocomplete({
@@ -12,6 +13,7 @@ export function Autocomplete({
     onSelect,
     placeholder = 'Search...',
     renderSuggestion,
+    value = '',
 }: AutocompleteProps) {
     // Component state and hooks
     const [input, setInput] = useState('');
