@@ -16,23 +16,27 @@ export function Autocomplete({
     value = '',
 }: AutocompleteProps) {
     // Component state and hooks
-    const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const [suggestions, setSuggestions] = useState<any[]>([]);
 
     // Handle input changes
-    const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setInput(value);
-        if (value.length < 2) {
+    const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.target.value;
+        onSelect(inputValue); // Update parent form's address on every keystroke
+        if (inputValue === '') {
+            setSuggestions([]);
+            setShowDropdown(false);
+            return;
+        }
+        if (inputValue.length < 2) {
             setSuggestions([]);
             setShowDropdown(false);
             return;
         }
         setLoading(true);
         try {
-            const results = await fetchSuggestions(value);
+            const results = await fetchSuggestions(inputValue);
             setSuggestions(results);
             setShowDropdown(true);
         } catch (err) {
@@ -45,7 +49,6 @@ export function Autocomplete({
 
     // Handle user selection
     const handleSelect = (item: any) => {
-        setInput(item);
         setSuggestions([]);
         setShowDropdown(false);
         onSelect(item);
@@ -56,7 +59,7 @@ export function Autocomplete({
             <input
                 type="text"
                 className="w-full px-2 rounded focus:outline-none focus:ring-0 placeholder-gray-400"
-                value={input}
+                value={value}
                 onChange={handleChange}
                 placeholder={placeholder}
                 autoComplete="off"

@@ -167,7 +167,7 @@ export default function EventForm() {
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="h-5 w-5"
+                        className="h-5 w-5 shrink-0"
                     >
                         <path
                             strokeLinecap="round"
@@ -201,7 +201,7 @@ export default function EventForm() {
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="h-5 w-5"
+                        className="h-5 w-5 shrink-0"
                     >
                         <path
                             strokeLinecap="round"
@@ -230,7 +230,7 @@ export default function EventForm() {
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="h-5 w-5 mr-2"
+                        className="h-5 w-5 mr-2 shrink-0"
                     >
                         <path
                             strokeLinecap="round"
@@ -261,7 +261,7 @@ export default function EventForm() {
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="h-5 w-5 mr-2"
+                        className="h-5 w-5 mr-2 shrink-0"
                     >
                         <path
                             strokeLinecap="round"
