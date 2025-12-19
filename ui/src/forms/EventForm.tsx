@@ -27,13 +27,13 @@ export default function EventForm() {
     const [form, setForm] = useState<{
         title: string;
         description: string;
-        address: string | null;
+        address: string;
         startTime: Date | null;
         endTime: Date | null;
     }>({
         title: '',
         description: '',
-        address: null,
+        address: '',
         startTime: null,
         endTime: null,
     });
@@ -41,13 +41,14 @@ export default function EventForm() {
 
     // Fetch event for editing
     const fetchEvent = async () => {
-        if (isEdit && eventId) {
+        if (isEdit) {
             setLoading(true);
             const result = await fetchEventById(Number(eventId));
+            console.log('Fetched event for editing:', result);
             setForm({
                 title: result.title ?? '',
                 description: result.description ?? '',
-                address: result.address ?? null,
+                address: result.address ?? '',
                 startTime: result.startTime ? new Date(result.startTime) : null,
                 endTime: result.endTime ? new Date(result.endTime) : null,
             });
