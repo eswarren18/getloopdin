@@ -1,4 +1,12 @@
+export interface Address {
+    formattedAddress: string;
+    lat: number;
+    lon: number;
+    placeId: number;
+}
+
 export interface EventBase {
+    address: Address;
     description?: string;
     endTime: string;
     startTime: string;

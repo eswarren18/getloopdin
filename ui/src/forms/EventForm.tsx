@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
+import { Autocomplete } from '../components/Autocomplete';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
@@ -25,6 +26,7 @@ export default function EventForm() {
     const [form, setForm] = useState({
         title: '',
         description: '',
+        address: null as any,
         startTime: null as Date | null,
         endTime: null as Date | null,
     });
@@ -41,6 +43,7 @@ export default function EventForm() {
                 setForm({
                     title: result.title ?? '',
                     description: result.description ?? '',
+                    address: result.address ?? null,
                     startTime: result.startTime
                         ? new Date(result.startTime)
                         : null,
@@ -49,6 +52,20 @@ export default function EventForm() {
             }
             setLoading(false);
         }
+    };
+
+    // Handle autocomplete address selection
+    const handleAutocomplete = async (query: string) => {
+        const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
+        );
+        const data = await res.json();
+        return data.map((item: any) => ({
+            formattedAddress: item.display_name,
+            lat: parseFloat(item.lat),
+            lon: parseFloat(item.lon),
+            placeId: item.osm_id,
+        }));
     };
 
     // Handle form submission
@@ -60,6 +77,10 @@ export default function EventForm() {
             setError('Please enter a title');
             return;
         }
+        if (!form.address) {
+            setError('Please select an address');
+            return;
+        }
         if (!form.startTime || !form.endTime) {
             setError('Please select start and end times');
             return;
@@ -69,37 +90,28 @@ export default function EventForm() {
             return;
         }
 
-        // Submit POST or PUT request to the API
+        // Call services to create or update event
         try {
             const payload = {
                 title: form.title,
                 description: form.description,
+                address: form.address,
                 startTime: form.startTime.toISOString(),
                 endTime: form.endTime.toISOString(),
             };
+            console.log('Payload in EventForm:', payload);
             if (isEdit && eventId) {
                 // Update event
-                const result = await updateEvent(Number(eventId), payload);
-                if (result instanceof Error) {
-                    setError(result.message);
-                } else {
-                    navigate(`/events/${eventId}`);
-                }
+                await updateEvent(Number(eventId), payload);
+                navigate(`/events/${eventId}`);
             } else {
                 // Create event
                 const result = await createEvent(payload);
-                if (result instanceof Error) {
-                    setError(
-                        'Unknown error occurred while creating event. Please try again.'
-                    );
-                } else {
-                    navigate(`/events/${result.id}`);
-                }
+                navigate(`/events/${result.id}`);
             }
-        } catch (error) {
-            setError(
-                'Unknown error occurred while creating event. Please try again.'
-            );
+        } catch (e: any) {
+            setError(e?.message || 'Failed to create event.');
+            console.error('Create/update event error:', e);
         }
     };
 
@@ -120,6 +132,7 @@ export default function EventForm() {
                 <p className="text-sm font-normal text-gray-600 mb-4">
                     Event Details
                 </p>
+                {/* Title */}
                 <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +148,6 @@ export default function EventForm() {
                             d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
                         />
                     </svg>
-
                     <input
                         autoComplete="title"
                         className="pl-2 outline-none border-none w-full placeholder-gray-400"
@@ -149,6 +161,40 @@ export default function EventForm() {
                         value={form.title}
                         disabled={loading}
                     />
+                </div>
+                {/* Address */}
+                <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        className="h-5 w-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                        />
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                        />
+                    </svg>
+                    <div className="flex-1">
+                        <Autocomplete
+                            fetchSuggestions={handleAutocomplete}
+                            onSelect={(place) =>
+                                setForm({ ...form, address: place })
+                            }
+                            placeholder="Address*"
+                            renderSuggestion={(item) => (
+                                <span>{item.formattedAddress}</span>
+                            )}
+                        />
+                    </div>
                 </div>
                 <div className="flex items-center border-2 py-2 px-3 rounded mb-3">
                     <svg
