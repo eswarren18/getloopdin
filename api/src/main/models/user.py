@@ -12,12 +12,22 @@ from src.main.database import Base
 
 class User(Base):
     __tablename__ = "users"
+
+    # Application Data
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=True)
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
     is_registered = Column(Boolean, default=False, nullable=False)
+
+    # Relationships
     invites = relationship(
         "Invite", back_populates="user", cascade="all, delete-orphan"
+    )
+    asked_questions = relationship(
+        "QuestionAsker", back_populates="user", cascade="all, delete-orphan"
+    )
+    questions = relationship(
+        "Question", back_populates="user", cascade="all, delete-orphan"
     )
