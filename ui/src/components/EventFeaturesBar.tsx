@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
     Chat,
@@ -33,7 +33,7 @@ export function EventFeaturesBar({
     >('participants');
 
     return (
-        <div className="flex flex-col w-5/6 mt-8 mb-6">
+        <div className="flex flex-col w-5/6 my-4">
             <div className="flex w-full border border-gray-200 mb-4" />
             <div className="flex gap-4 mb-4 justify-center">
                 {/* Participants */}
@@ -219,7 +219,10 @@ export function EventFeaturesBar({
             <div className="w-full border border-gray-200" />
             {/* Event feature displays */}
             {featureSelection === 'participants' && (
-                <EventParticipants eventId={eventId?.toString() ?? ''} />
+                <EventParticipants
+                    eventId={eventId?.toString() ?? ''}
+                    authUserId={authUserId}
+                />
             )}
             {/* Render EventInvites if selected */}
             {featureSelection === 'invites' &&

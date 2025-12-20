@@ -179,11 +179,11 @@ export default function Event() {
                                 </div>
                             )}
                             {/* Image and summary */}
-                            <div className="flex w-5/6 gap-4 items-center">
+                            <div className="flex w-5/6 gap-4 items-start">
                                 {/* Image */}
                                 <div className="w-72 h-72 bg-gray-200 rounded-2xl"></div>
                                 {/* Summary: title, description, datetime, location, host */}
-                                <div className="flex w-2/3 flex-col mt-4 mb-6">
+                                <div className="flex w-2/3 flex-col mb-6">
                                     {/* Title */}
                                     <div className="flex items-center mb-2">
                                         <h1 className="text-2xl font-bold mr-6">
@@ -319,20 +319,32 @@ export default function Event() {
                                     <h2 className="text-lg font-bold mb-2">
                                         Hosts
                                     </h2>
-                                    <div className="flex gap-6 flex-wrap justify-start items-end">
+                                    <div className="flex gap-4 flex-wrap justify-start">
                                         {hosts.map((host) => (
                                             <div
                                                 className="flex flex-col items-center"
                                                 key={host.id}
                                             >
-                                                <div className="w-12 h-12 rounded-full bg-cyan-300 flex items-center justify-center text-white text-xl font-semibold mb-1">
+                                                <div className="w-12 h-12 rounded-full bg-cyan-300 flex items-center justify-center text-white text-xl font-semibold">
                                                     {host.name
                                                         .charAt(0)
                                                         .toUpperCase()}
                                                 </div>
-                                                <div className="text-xs font-medium mb-1">
-                                                    {host.name}
+                                                <div className="text-xs font-medium wrap-break-word text-center">
+                                                    {host.name.split(' ')[0]}
                                                 </div>
+                                                {auth?.user?.id === host.id && (
+                                                    <div
+                                                        className="px-2 py-0.5 bg-green-200 text-green-700 text-[10px] rounded-full font-semibold mt-1"
+                                                        style={{
+                                                            lineHeight: '1',
+                                                            display:
+                                                                'inline-block',
+                                                        }}
+                                                    >
+                                                        You
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
