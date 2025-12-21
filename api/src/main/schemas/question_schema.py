@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+# --- Questions ---
 class QuestionCreate(BaseModel):
     question_text: str
 
@@ -17,8 +18,9 @@ class QuestionCreate(BaseModel):
 
 
 class QuestionUpdate(BaseModel):
-    question_text: Optional[str] = None
+    asker_user_ids: Optional[list[int]] = None
     answer_text: Optional[str] = None
+    question_text: Optional[str] = None
 
 
 class OrderUpdateItem(BaseModel):
@@ -49,6 +51,36 @@ class QuestionOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     published_at: Optional[datetime] = None
+
+    class Config:
+        orm_mode = True
+
+
+# --- Categories ---
+class QuestionCategoryCreate(BaseModel):
+    name: str
+
+
+class QuestionCategoryUpdate(BaseModel):
+    name: Optional[str] = None
+
+
+class QuestionCategoryOrderItem(BaseModel):
+    category_id: int
+    display_order: int
+
+
+class QuestionCategoryOrderUpdate(BaseModel):
+    items: list[QuestionCategoryOrderItem]
+
+
+class QuestionCategoryOut(BaseModel):
+    id: int
+    event_id: int
+    name: str
+    display_order: int
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True

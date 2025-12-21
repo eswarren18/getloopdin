@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
@@ -23,23 +25,57 @@ router = APIRouter(prefix="/api", tags=["Questions"])
 
 
 @router.get("/events/{event_id}/questions", response_model=list[QuestionOut])
-def get_event_questions(event_id: int, db: Session = Depends(get_db)):
-    # Validate event exists
+def get_questions(
+    event_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user_from_token),
+    invite_token: Optional[str] = None,
+):
+    # Fetch event
     event = db.query(Event).filter(Event.id == event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    # Fetch questions, order: published first, then draft
-    questions = (
-        db.query(Question)
-        .filter(Question.event_id == event_id)
-        .order_by(
-            desc(Question.is_published),
-            asc(Question.published_order),
-            asc(Question.draft_order),
+    is_host = False
+    authorized = False
+
+    # Validate authentication (path 1: registered user)
+    if user:
+        participant = (
+            db.query(Participant)
+            .filter(
+                Participant.event_id == event_id,
+                Participant.user_id == user.id,
+            )
+            .first()
         )
-        .all()
-    )
+        if participant:
+            authorized = True
+            if participant.role == "host":
+                is_host = True
+
+    # Validate authentication (path 2: invite token)
+    elif invite_token:
+        invite = db.query(Invite).filter(Invite.token == invite_token).first()
+        if invite and invite.event_id == event_id:
+            authorized = True
+
+    if not authorized:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required",
+        )
+
+    # Query questions
+    query = db.query(Question).filter(Question.event_id == event_id)
+    if not is_host:
+        query = query.filter(Question.is_published == True)
+
+    questions = query.order_by(
+        desc(Question.is_published),
+        asc(Question.published_order),
+        asc(Question.draft_order),
+    ).all()
 
     return questions
 
@@ -54,7 +90,7 @@ def create_question(
     event = None
     asker_user_id = None
 
-    # Auth validation: Path 1 (registered user)
+    # Validate authentication (path 1: registered user)
     if user:
         asker_user_id = user.id
         event = db.query(Event).filter(Event.id == event_id).first()
@@ -78,12 +114,12 @@ def create_question(
                     detail="Only hosts can publish questions",
                 )
 
-    # Validate auth path 2 (unregistered user with invite token)
+    # Validate authentication (path 2: invite token)
     else:
         if not payload.invite_token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authentication or invite token required",
+                detail="Authentication required",
             )
 
         invite = (
@@ -203,9 +239,11 @@ def update_order(
     db: Session = Depends(get_db),
     user=Depends(get_current_user_from_token),
 ):
+    # Validate auth
     if not user:
         raise HTTPException(status_code=401, detail="Authentication required")
 
+    # Validate host
     is_host = (
         db.query(Participant)
         .filter(
@@ -220,8 +258,8 @@ def update_order(
             status_code=403, detail="Only hosts can reorder questions"
         )
 
+    # Fetch question
     now = func.now()
-
     for item in payload.items:
         question = (
             db.query(Question)
@@ -308,3 +346,45 @@ def update_question(
     db.commit()
     db.refresh(question)
     return question
+
+
+@router.delete("/events/{event_id}/questions/{question_id}", status_code=204)
+def delete_question(
+    event_id: int,
+    question_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user_from_token),
+):
+    # Validate authentication (registered user)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    # Validate authorization (host)
+    is_host = (
+        db.query(Participant)
+        .filter(
+            Participant.event_id == event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
+        .first()
+    )
+    if not is_host:
+        raise HTTPException(
+            status_code=403, detail="Only hosts can delete questions"
+        )
+
+    # Fetch question
+    question = (
+        db.query(Question)
+        .filter(
+            Question.id == question_id,
+            Question.event_id == event_id,
+        )
+        .first()
+    )
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    db.delete(question)
+    db.commit()
