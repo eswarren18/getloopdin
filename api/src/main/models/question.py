@@ -32,7 +32,7 @@ class Question(Base):
     published_order = Column(Integer, nullable=True)
     question_text = Column(Text, nullable=False)
     user_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )
 
     # Metadata
@@ -52,9 +52,7 @@ class Question(Base):
     )
     category = relationship("QuestionCategory", back_populates="questions")
     event = relationship("Event", back_populates="questions")
-    user = relationship(
-        "User", back_populates="questions", cascade="all, delete-orphan"
-    )
+    user = relationship("User", back_populates="questions")
 
 
 class QuestionAsker(Base):

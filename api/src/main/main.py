@@ -9,6 +9,7 @@ from src.main.routers import (
     invite_router,
     private_event_router,
     public_event_router,
+    question_router,
     user_router,
 )
 
@@ -47,4 +48,5 @@ app.include_router(auth_router.router)
 app.include_router(invite_router.router)
 app.include_router(private_event_router.router)
 app.include_router(public_event_router.router)
+app.include_router(question_router.router)
 app.include_router(user_router.router)
