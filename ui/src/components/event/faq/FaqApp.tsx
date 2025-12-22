@@ -1,44 +1,53 @@
 import { DndContext } from '@dnd-kit/core';
 import { useState } from 'react';
 
-import { Question, Droppable } from '../faq';
+import {
+    CategorySection,
+    DraftSection,
+    PublishedSection,
+    Question,
+} from '../faq';
 
 export function FaqApp() {
-    const containers = ['A', 'B', 'C'];
-    const [parent, setParent] = useState(null);
-    const draggableMarkup = <Question>Am I a question?</Question>;
+    const [location, setLocation] = useState<string | null>(null);
 
-    // fix any
     const handleDragEnd = (event: any) => {
         const { over } = event;
-        setParent(over ? over.id : null);
+        setLocation(over ? over.id : null);
     };
 
     return (
-        <>
-            <div className="w-full mt-6 justify-center mx-auto">
-                <h2 className="text-2xl font-bold mb-2">
-                    Frequently Asked Questions
-                </h2>
-            </div>
+        <div className="max-w-2xl mx-auto mt-8 space-y-6">
+            <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
             <DndContext onDragEnd={handleDragEnd}>
-                {parent === null ? draggableMarkup : null}
-                {containers.map((id) => (
-                    <Droppable key={id} id={id}>
-                        {parent === id ? draggableMarkup : `Container ${id}`}
-                    </Droppable>
-                ))}
-                <div>
-                    <h3 className="text-lg font-semibold mt-4 mb-2">
-                        User Submitted Questions (Unpublished)
-                    </h3>
-                    <Droppable id="drafts">
-                        {parent === 'drafts'
-                            ? draggableMarkup
-                            : `No draft questions remaining`}
-                    </Droppable>
-                </div>
+                {/* Categories */}
+                <CategorySection id="cat-1" title="Category One">
+                    {location === 'cat-1' && (
+                        <Question id="q1">Am I a question?</Question>
+                    )}
+                </CategorySection>
+                <CategorySection id="cat-2" title="Category Two">
+                    {location === 'cat-2' && (
+                        <Question id="q1">Am I a question?</Question>
+                    )}
+                </CategorySection>
+                {/* Published but uncategorized */}
+                <PublishedSection>
+                    {location === 'published' && (
+                        <Question id="q1">Am I a question?</Question>
+                    )}
+                </PublishedSection>
+                {/* Drafts */}
+                <DraftSection>
+                    {location === 'drafts' && (
+                        <Question id="q1">Am I a question?</Question>
+                    )}
+                </DraftSection>
+                {/* Floating question (when not dropped yet) */}
+                {location === null && (
+                    <Question id="q1">Am I a question?</Question>
+                )}
             </DndContext>
-        </>
+        </div>
     );
 }

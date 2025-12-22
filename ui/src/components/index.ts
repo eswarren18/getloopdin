@@ -1,5 +1,4 @@
 export { ConfirmDelete } from './ConfirmDelete';
-export { Droppable } from './event/faq/Droppable';
 export {
     Chat,
     Invites,

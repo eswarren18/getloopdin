@@ -1,23 +1,31 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
-export function Question(props: { children: React.ReactNode }) {
+export function Question({
+    id,
+    children,
+}: {
+    id: string;
+    children: React.ReactNode;
+}) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
-        id: 'draggable',
+        id,
+        data: { type: 'question', questionId: id },
     });
+
     const style = {
         transform: CSS.Translate.toString(transform),
     };
 
     return (
-        <button
-            className="mx-auto"
+        <div
             ref={setNodeRef}
             style={style}
             {...listeners}
             {...attributes}
+            className="p-3 bg-white border rounded shadow cursor-grab"
         >
-            {props.children}
-        </button>
+            {children}
+        </div>
     );
 }
