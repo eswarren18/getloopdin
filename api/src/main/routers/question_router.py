@@ -15,6 +15,10 @@ from src.main.models import (
 )
 from src.main.schemas import (
     OrderUpdate,
+    QuestionCategoryCreate,
+    QuestionCategoryOrderUpdate,
+    QuestionCategoryOut,
+    QuestionCategoryUpdate,
     QuestionCreate,
     QuestionOut,
     QuestionUpdate,
@@ -233,13 +237,13 @@ def create_question(
 
 
 @router.put("/events/{event_id}/questions/order", status_code=204)
-def update_order(
+def reorder_questions(
     event_id: int,
     payload: OrderUpdate,
     db: Session = Depends(get_db),
     user=Depends(get_current_user_from_token),
 ):
-    # Validate auth
+    # Validate authentication
     if not user:
         raise HTTPException(status_code=401, detail="Authentication required")
 
@@ -343,6 +347,36 @@ def update_question(
 
     question.updated_at = func.now()
 
+    # Record askers (registered users only)
+    if payload.asker_user_ids is not None:
+        # Remove existing askers
+        db.query(QuestionAsker).filter(
+            QuestionAsker.question_id == question.id
+        ).delete()
+
+        # Validate and add new askers
+        for asker_user_id in set(payload.asker_user_ids):
+            is_participant = (
+                db.query(Participant)
+                .filter(
+                    Participant.event_id == event_id,
+                    Participant.user_id == asker_user_id,
+                )
+                .first()
+            )
+            if not is_participant:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"User {asker_user_id} is not a participant in this event",
+                )
+
+            db.add(
+                QuestionAsker(
+                    question_id=question.id,
+                    user_id=asker_user_id,
+                )
+            )
+
     db.commit()
     db.refresh(question)
     return question
@@ -387,4 +421,258 @@ def delete_question(
         raise HTTPException(status_code=404, detail="Question not found")
 
     db.delete(question)
+    db.commit()
+
+
+@router.get(
+    "/events/{event_id}/question-categories",
+    response_model=list[QuestionCategoryOut],
+)
+def get_question_categories(
+    event_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user_from_token),
+    invite_token: Optional[str] = None,
+):
+    # Fetch event
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    authorized = False
+
+    # Authenticate user (path 1: registered user)
+    if user:
+        participant = (
+            db.query(Participant)
+            .filter(
+                Participant.event_id == event_id,
+                Participant.user_id == user.id,
+            )
+            .first()
+        )
+        if participant:
+            authorized = True
+
+    # Authenticate user (path 2: invite token)
+    elif invite_token:
+        invite = (
+            db.query(Invite)
+            .filter(
+                Invite.token == invite_token,
+                Invite.event_id == event_id,
+            )
+            .first()
+        )
+        if invite:
+            authorized = True
+    if not authorized:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    return (
+        db.query(QuestionCategory)
+        .filter(QuestionCategory.event_id == event_id)
+        .order_by(asc(QuestionCategory.display_order))
+        .all()
+    )
+
+
+@router.post(
+    "/events/{event_id}/question-categories",
+    response_model=QuestionCategoryOut,
+)
+def create_question_category(
+    event_id: int,
+    payload: QuestionCategoryCreate,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user_from_token),
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    is_host = (
+        db.query(Participant)
+        .filter(
+            Participant.event_id == event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
+        .first()
+    )
+    if not is_host:
+        raise HTTPException(
+            status_code=403, detail="Only hosts can create categories"
+        )
+
+    max_order = (
+        db.query(QuestionCategory.display_order)
+        .filter(QuestionCategory.event_id == event_id)
+        .order_by(QuestionCategory.display_order.desc())
+        .first()
+    )
+
+    category = QuestionCategory(
+        event_id=event_id,
+        name=payload.name,
+        display_order=(max_order[0] + 1) if max_order else 1,
+    )
+
+    db.add(category)
+    db.commit()
+    db.refresh(category)
+    return category
+
+
+@router.put(
+    "/events/{event_id}/question-categories/order",
+    status_code=204,
+)
+def reorder_question_categories(
+    event_id: int,
+    payload: QuestionCategoryOrderUpdate,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user_from_token),
+):
+    # Validate authentication
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    # Validation authorization (host)
+    is_host = (
+        db.query(Participant)
+        .filter(
+            Participant.event_id == event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
+        .first()
+    )
+    if not is_host:
+        raise HTTPException(
+            status_code=403, detail="Only hosts can reorder categories"
+        )
+
+    # Validate ordering has no duplicates
+    proposed_orders = [item.display_order for item in payload.items]
+    if len(proposed_orders) != len(set(proposed_orders)):
+        raise HTTPException(
+            status_code=400,
+            detail="Duplicate display_order values are not allowed",
+        )
+
+    # Validate ordering has no gaps
+    expected_orders = set(range(1, len(proposed_orders) + 1))
+    if set(proposed_orders) != expected_orders:
+        raise HTTPException(
+            status_code=400,
+            detail="display_order must be a contiguous sequence starting at 1",
+        )
+
+    # Fetch categories
+    now = func.now()
+    for item in payload.items:
+        category = (
+            db.query(QuestionCategory)
+            .filter(
+                QuestionCategory.id == item.category_id,
+                QuestionCategory.event_id == event_id,
+            )
+            .first()
+        )
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
+
+        category.display_order = item.display_order
+        category.updated_at = now
+
+    db.commit()
+    return category
+
+
+@router.put(
+    "/events/{event_id}/question-categories/{category_id}",
+    response_model=QuestionCategoryOut,
+)
+def update_question_category(
+    event_id: int,
+    category_id: int,
+    payload: QuestionCategoryUpdate,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user_from_token),
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    is_host = (
+        db.query(Participant)
+        .filter(
+            Participant.event_id == event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
+        .first()
+    )
+    if not is_host:
+        raise HTTPException(
+            status_code=403, detail="Only hosts can update categories"
+        )
+
+    category = (
+        db.query(QuestionCategory)
+        .filter(
+            QuestionCategory.id == category_id,
+            QuestionCategory.event_id == event_id,
+        )
+        .first()
+    )
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    if payload.name is not None:
+        category.name = payload.name
+
+    category.updated_at = func.now()
+    db.commit()
+    db.refresh(category)
+
+
+@router.delete(
+    "/events/{event_id}/question-categories/{category_id}",
+    status_code=204,
+)
+def delete_question_category(
+    event_id: int,
+    category_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user_from_token),
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    is_host = (
+        db.query(Participant)
+        .filter(
+            Participant.event_id == event_id,
+            Participant.user_id == user.id,
+            Participant.role == "host",
+        )
+        .first()
+    )
+    if not is_host:
+        raise HTTPException(
+            status_code=403, detail="Only hosts can delete categories"
+        )
+
+    category = (
+        db.query(QuestionCategory)
+        .filter(
+            QuestionCategory.id == category_id,
+            QuestionCategory.event_id == event_id,
+        )
+        .first()
+    )
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    db.delete(category)
     db.commit()
