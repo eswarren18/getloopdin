@@ -2,25 +2,21 @@ import { useEffect, useState } from 'react';
 
 import {
     Chat,
-    EventInvites,
-    EventParticipants,
+    Invites,
+    Participants,
     FaqApp,
     Itinerary,
     Packing,
     Polls,
-} from '../';
+} from '..';
 
-interface EventFeaturesBarProps {
+interface FeaturesBarProps {
     eventId?: string;
     hosts: { id: number }[];
     authUserId?: number;
 }
 
-export function EventFeaturesBar({
-    eventId,
-    hosts,
-    authUserId,
-}: EventFeaturesBarProps) {
+export function FeaturesBar({ eventId, hosts, authUserId }: FeaturesBarProps) {
     // Page state and hooks
     const [featureSelection, setFeatureSelection] = useState<
         | 'participants'
@@ -219,15 +215,15 @@ export function EventFeaturesBar({
             <div className="w-full border border-gray-200" />
             {/* Event feature displays */}
             {featureSelection === 'participants' && (
-                <EventParticipants
+                <Participants
                     eventId={eventId?.toString() ?? ''}
                     authUserId={authUserId}
                 />
             )}
-            {/* Render EventInvites if selected */}
+            {/* Render FeaturesBar if selected */}
             {featureSelection === 'invites' &&
                 hosts.some((host) => host.id === authUserId) && (
-                    <EventInvites eventId={eventId} />
+                    <Invites eventId={eventId} />
                 )}
             {featureSelection === 'faq' && <FaqApp />}
             {featureSelection === 'chat' && <Chat />}

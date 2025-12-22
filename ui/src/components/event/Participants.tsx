@@ -3,15 +3,12 @@ import { fetchParticipants } from '../../services';
 import { ErrorDisplay } from '../../errors';
 import { ParticipantOut } from '../../types';
 
-interface EventParticipantsProps {
+interface ParticipantsProps {
     eventId: string | undefined;
     authUserId?: number;
 }
 
-export function EventParticipants({
-    eventId,
-    authUserId,
-}: EventParticipantsProps) {
+export function Participants({ eventId, authUserId }: ParticipantsProps) {
     // Component state and hooks
     const [error, setError] = useState<string | null>(null);
     const [participants, setParticipants] = useState<ParticipantOut[]>([]);

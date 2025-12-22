@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { fetchInvites } from '../../services';
 import { ErrorDisplay } from '../../errors';
 
-interface EventParticipantsProps {
+interface InvitesProps {
     eventId: string | undefined;
 }
 
-export function EventInvites({ eventId }: EventParticipantsProps) {
+export function Invites({ eventId }: InvitesProps) {
     // Component state and hooks
     const [selectedStatus, setSelectedStatus] = useState<
         'all' | 'accepted' | 'declined' | 'pending'

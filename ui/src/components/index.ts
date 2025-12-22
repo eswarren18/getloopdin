@@ -2,9 +2,9 @@ export { ConfirmDelete } from './ConfirmDelete';
 export { Droppable } from './event/faq/Droppable';
 export {
     Chat,
-    EventInvites,
-    EventFeaturesBar,
-    EventParticipants,
+    Invites,
+    FeaturesBar,
+    Participants,
     Itinerary,
     Packing,
     Polls,

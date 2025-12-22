@@ -9,7 +9,7 @@ import {
 import {
     ConfirmDelete,
     ErrorSuccessAlert,
-    EventFeaturesBar,
+    FeaturesBar,
     LoadingIcon,
 } from '../components';
 import { AuthContext } from '../providers';
@@ -352,7 +352,7 @@ export default function Event() {
                             </div>
                             {/* Event Features */}
                             {eventId && (
-                                <EventFeaturesBar
+                                <FeaturesBar
                                     eventId={eventId}
                                     hosts={hosts}
                                     authUserId={auth?.user?.id}
