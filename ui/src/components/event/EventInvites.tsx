@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { InviteOut } from '../types';
+import { InviteOut } from '../../types';
 import { useNavigate } from 'react-router-dom';
-import { fetchInvites } from '../services/inviteService';
-import { ErrorDisplay } from '../errors';
+import { fetchInvites } from '../../services';
+import { ErrorDisplay } from '../../errors';
 
 interface EventParticipantsProps {
     eventId: string | undefined;

@@ -1,13 +1,16 @@
-export { Chat } from './Chat';
 export { ConfirmDelete } from './ConfirmDelete';
-export { EventFeaturesBar } from './EventFeaturesBar';
-export { EventInvites } from './EventInvites';
-export { EventParticipants } from './EventParticipants';
-export { Faq } from './Faq';
+export { Droppable } from './event/faq/Droppable';
+export {
+    Chat,
+    EventInvites,
+    EventFeaturesBar,
+    EventParticipants,
+    Itinerary,
+    Packing,
+    Polls,
+} from './event';
+export { FaqApp, Question } from './event/faq';
 export { ErrorSuccessAlert } from './ErrorSuccessAlert';
-export { Itinerary } from './Itinerary';
 export { LoadingIcon } from './LoadingIcon';
 export { Nav } from './Nav';
 export { Sidebar } from './Sidebar';
-export { Packing } from './Packing';
-export { Polls } from './Polls';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { fetchParticipants } from '../services';
-import { ErrorDisplay } from '../errors';
-import { ParticipantOut } from '../types';
+import { fetchParticipants } from '../../services';
+import { ErrorDisplay } from '../../errors';
+import { ParticipantOut } from '../../types';
 
 interface EventParticipantsProps {
     eventId: string | undefined;

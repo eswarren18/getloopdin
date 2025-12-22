@@ -4,11 +4,11 @@ import {
     Chat,
     EventInvites,
     EventParticipants,
-    Faq,
+    FaqApp,
     Itinerary,
     Packing,
     Polls,
-} from '../components';
+} from '../';
 
 interface EventFeaturesBarProps {
     eventId?: string;
@@ -229,7 +229,7 @@ export function EventFeaturesBar({
                 hosts.some((host) => host.id === authUserId) && (
                     <EventInvites eventId={eventId} />
                 )}
-            {featureSelection === 'faq' && <Faq />}
+            {featureSelection === 'faq' && <FaqApp />}
             {featureSelection === 'chat' && <Chat />}
             {featureSelection === 'packing' && <Packing />}
             {featureSelection === 'itinerary' && <Itinerary />}
