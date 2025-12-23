@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Question } from './FaqApp';
+import { Question } from './EditFaq';
 
 export function QuestionCard({
     question,

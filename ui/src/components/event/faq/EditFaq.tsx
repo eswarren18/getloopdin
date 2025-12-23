@@ -6,9 +6,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useState } from 'react';
 
-import { QuestionCard } from './QuestionCard';
-import { CategoryContainer } from './CategoryContainer';
-import { DraftSection } from './DraftSection';
+import { CategoryContainer, DraftSection, QuestionCard } from './';
 
 export type Question = {
     id: number;
@@ -21,7 +19,7 @@ export type Category = {
     questions: Question[];
 };
 
-export function FaqApp() {
+export function EditFaq() {
     const [categories, setCategories] = useState<Category[]>([
         {
             id: 1,
@@ -130,6 +128,46 @@ export function FaqApp() {
             );
         }
     };
+
+    function buildQuestionOrderPayload(
+        categories: Category[],
+        drafts: Question[]
+    ) {
+        const items: any[] = [];
+
+        categories.forEach((cat) => {
+            cat.questions.forEach((q, index) => {
+                items.push({
+                    question_id: q.id,
+                    is_published: true,
+                    category_id: cat.id,
+                    published_order: index + 1,
+                    draft_order: null,
+                });
+            });
+        });
+
+        drafts.forEach((q, index) => {
+            items.push({
+                question_id: q.id,
+                is_published: false,
+                category_id: null,
+                published_order: null,
+                draft_order: index + 1,
+            });
+        });
+
+        return { items };
+    }
+
+    function buildCategoryOrderPayload(categories: Category[]) {
+        return {
+            items: categories.map((cat, index) => ({
+                category_id: cat.id,
+                display_order: index + 1,
+            })),
+        };
+    }
 
     return (
         <div className="max-w-2xl mx-auto mt-8 space-y-6">

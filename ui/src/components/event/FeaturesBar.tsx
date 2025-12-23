@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import {
     Chat,
+    EditFaq,
     Invites,
     Participants,
-    FaqApp,
     Itinerary,
     Packing,
     Polls,
+    Faq,
 } from '..';
 
 interface FeaturesBarProps {
@@ -225,7 +226,7 @@ export function FeaturesBar({ eventId, hosts, authUserId }: FeaturesBarProps) {
                 hosts.some((host) => host.id === authUserId) && (
                     <Invites eventId={eventId} />
                 )}
-            {featureSelection === 'faq' && <FaqApp />}
+            {featureSelection === 'faq' && <Faq />}
             {featureSelection === 'chat' && <Chat />}
             {featureSelection === 'packing' && <Packing />}
             {featureSelection === 'itinerary' && <Itinerary />}

@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
-import { Category } from './FaqApp';
+import { Category } from './EditFaq';
 
 export function CategoryContainer({
     category,
