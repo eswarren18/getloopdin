@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { EditFaq } from './EditFaq';
 import { PublishedFaq } from './PublishedFaq';
 
-export function Faq() {
+interface FaqProps {
+    eventId?: string;
+    authUserId?: number;
+}
+
+export function Faq({ eventId, authUserId }: FaqProps) {
     const [isEditing, setIsEditing] = useState(false);
 
     return (
@@ -21,7 +26,11 @@ export function Faq() {
             </div>
 
             {/* FAQ content */}
-            {isEditing ? <EditFaq /> : <PublishedFaq />}
+            {isEditing ? (
+                <EditFaq eventId={eventId} authUserId={authUserId} />
+            ) : (
+                <PublishedFaq eventId={eventId} authUserId={authUserId} />
+            )}
         </div>
     );
 }

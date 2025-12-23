@@ -237,6 +237,7 @@ def get_invites(
     status: str = Query(
         None, description="Status: pending, accepted, declined, all"
     ),
+    # TODO: clean up (and comment) invite routes. Make them look like question routes. User id not needed becuase of auth?
     user_id: int = Query(None, description="Filter by user_id"),
     event_id: int = Query(None, description="Filter by event_id"),
     db: Session = Depends(get_db),

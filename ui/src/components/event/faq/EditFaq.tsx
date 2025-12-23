@@ -19,7 +19,12 @@ export type Category = {
     questions: Question[];
 };
 
-export function EditFaq() {
+interface EditFaqProps {
+    eventId?: string;
+    authUserId?: number;
+}
+
+export function EditFaq({ eventId, authUserId }: EditFaqProps) {
     const [categories, setCategories] = useState<Category[]>([
         {
             id: 1,

@@ -41,16 +41,10 @@ class QuestionOut(BaseModel):
     question_text: str
     answer_text: Optional[str] = None
     category_id: Optional[int] = None
-
     is_published: bool
     published_order: Optional[int] = None
     draft_order: Optional[int] = None
-
     user_id: Optional[int] = None
-
-    created_at: datetime
-    updated_at: datetime
-    published_at: Optional[datetime] = None
 
     class Config:
         orm_mode = True

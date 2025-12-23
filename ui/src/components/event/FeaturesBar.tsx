@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import {
     Chat,
-    EditFaq,
     Invites,
     Participants,
     Itinerary,
@@ -226,7 +225,9 @@ export function FeaturesBar({ eventId, hosts, authUserId }: FeaturesBarProps) {
                 hosts.some((host) => host.id === authUserId) && (
                     <Invites eventId={eventId} />
                 )}
-            {featureSelection === 'faq' && <Faq />}
+            {featureSelection === 'faq' && (
+                <Faq eventId={eventId} authUserId={authUserId} />
+            )}
             {featureSelection === 'chat' && <Chat />}
             {featureSelection === 'packing' && <Packing />}
             {featureSelection === 'itinerary' && <Itinerary />}

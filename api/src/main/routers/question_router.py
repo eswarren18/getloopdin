@@ -23,7 +23,7 @@ from src.main.schemas import (
     QuestionOut,
     QuestionUpdate,
 )
-from src.main.utils import get_current_user_from_token
+from src.main.utils import get_current_user_from_token, serialize_questionout
 
 router = APIRouter(prefix="/api", tags=["Questions"])
 
@@ -634,6 +634,7 @@ def update_question_category(
     category.updated_at = func.now()
     db.commit()
     db.refresh(category)
+    return category
 
 
 @router.delete(

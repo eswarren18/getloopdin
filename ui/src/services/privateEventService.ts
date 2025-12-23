@@ -10,6 +10,7 @@ export async function fetchEvents(
     time: 'upcoming' | 'past' | 'all'
 ): Promise<EventOut[]> {
     try {
+        // Send GET request to the API
         const response = await fetch(
             `${baseUrl}/api/private/events/?role=${role}&time=${time}`,
             {
@@ -17,7 +18,11 @@ export async function fetchEvents(
             }
         );
         if (!response.ok) throw new Error('Failed to retrieve events.');
+
+        // Transform Response object to JSON
         const data = await response.json();
+
+        // Transform data to camelCase for UI consumption
         const events: EventOut[] = data.map((event: any) => ({
             address: event.address,
             description: event.description,
@@ -42,8 +47,9 @@ export async function createEvent(eventData: EventCreate): Promise<EventOut> {
         start_time: eventData.startTime,
         title: eventData.title,
     };
-    console.log('transformeddata', transformedEventData);
+
     try {
+        // Send POST request to the API
         const response = await fetch(`${baseUrl}/api/private/events/`, {
             method: 'POST',
             headers: {
@@ -53,7 +59,11 @@ export async function createEvent(eventData: EventCreate): Promise<EventOut> {
             credentials: 'include',
         });
         if (!response.ok) throw new Error('Failed to create event.');
+
+        // Transform Response object to JSON
         const data = await response.json();
+
+        // Transform data to camelCase for UI consumption
         const event: EventOut = {
             address: data.address,
             description: data.description,
@@ -70,6 +80,7 @@ export async function createEvent(eventData: EventCreate): Promise<EventOut> {
 
 export async function fetchEventById(eventId: number): Promise<EventOut> {
     try {
+        // Send GET request to the API
         const response = await fetch(
             `${baseUrl}/api/private/events/${eventId}`,
             {
@@ -79,7 +90,11 @@ export async function fetchEventById(eventId: number): Promise<EventOut> {
         if (!response.ok) {
             throw new Error('Failed to retrieve event.');
         }
+
+        // Transform Response object to JSON
         const data = await response.json();
+
+        // Transform data to camelCase for UI consumption
         const event: EventOut = {
             address: data.address,
             description: data.description,
@@ -107,6 +122,7 @@ export async function updateEvent(
     };
 
     try {
+        // Send PUT request to the API
         const response = await fetch(
             `${baseUrl}/api/private/events/${eventId}`,
             {
@@ -121,7 +137,11 @@ export async function updateEvent(
         if (!response.ok) {
             throw new Error('Failed to update event.');
         }
+
+        // Transform Response object to JSON
         const data = await response.json();
+
+        // Transform data to camelCase for UI consumption
         const event: EventOut = {
             address: data.address,
             description: data.description,
@@ -138,6 +158,7 @@ export async function updateEvent(
 
 export async function deleteEvent(eventId: number): Promise<true> {
     try {
+        // Send DELETE request to the API
         const response = await fetch(
             `${baseUrl}/api/private/events/${eventId}`,
             {
@@ -159,6 +180,7 @@ export async function fetchParticipants(
     role?: 'host' | 'participant'
 ): Promise<ParticipantOut[]> {
     try {
+        // Send GET request to the API
         const url = role
             ? `${baseUrl}/api/private/events/${eventId}/participants?role=${role}`
             : `${baseUrl}/api/private/events/${eventId}/participants`;
@@ -166,6 +188,8 @@ export async function fetchParticipants(
         if (!response.ok) {
             throw new Error('Failed to retrieve participants.');
         }
+
+        // Transform Response object to JSON
         const data = await response.json();
         return data;
     } catch (e) {

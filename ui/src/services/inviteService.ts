@@ -84,12 +84,7 @@ export async function fetchInvites(
         const invites: InviteOut[] = data.map((invite: any) => ({
             email: invite.email,
             event: {
-                address: {
-                    formattedAddress: invite.event.address.formatted_address,
-                    lat: invite.event.address.lat,
-                    lon: invite.event.address.lon,
-                    placeId: invite.event.address.place_id,
-                },
+                address: invite.event.address,
                 description: invite.event.description,
                 endTime: invite.event.end_time,
                 id: invite.event.id,
@@ -134,12 +129,7 @@ export async function respondToInvite(
         const invite: InviteOut = {
             email: data.email,
             event: {
-                address: {
-                    formattedAddress: data.event.address.formatted_address,
-                    lat: data.event.address.lat,
-                    lon: data.event.address.lon,
-                    placeId: data.event.address.place_id,
-                },
+                address: data.event.address,
                 description: data.event.description,
                 endTime: data.event.end_time,
                 id: data.event.id,

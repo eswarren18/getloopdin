@@ -25,6 +25,7 @@ import { EventOut, ParticipantOut } from '../types';
 import { NotFound } from '../errors';
 
 export default function Event() {
+    // TODO: doesn't allow non-user with token to see event
     // Redirect to home if user is not logged in or unregistered user doesn't have a token
     const auth = useContext(AuthContext);
     const { eventId, token } = useParams<{
