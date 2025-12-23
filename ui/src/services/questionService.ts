@@ -28,6 +28,7 @@ export async function fetchQuestions(
         // Transform data to camelCase for UI consumption
         const questions: QuestionOut[] = data.map((item: any) => ({
             answerText: item.answer_text,
+            askerUserIds: item.asker_user_ids ?? [],
             categoryId: item.category_id,
             draftOrder: item.draft_order,
             eventId: item.event_id,

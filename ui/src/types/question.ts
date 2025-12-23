@@ -1,24 +1,24 @@
 // --- Questions ---
 export interface QuestionCreate {
-    questioText: string;
     answerText?: string | null;
     categoryId?: number | null;
-    isPublished?: boolean;
     inviteToken?: string | null;
+    isPublished?: boolean;
+    questionText: string;
 }
 
 export interface QuestionUpdate {
-    askerUserIds?: number[] | null;
     answerText?: string | null;
+    askerUserIds?: number[] | null;
     questionText?: string | null;
 }
 
 export interface OrderUpdateItem {
-    questionId: number;
-    isPublished: boolean;
     categoryId?: number | null;
-    publishedOrder?: number | null;
     draftOrder?: number | null;
+    isPublished: boolean;
+    publishedOrder?: number | null;
+    questionId: number;
 }
 
 export interface OrderUpdate {
@@ -27,6 +27,7 @@ export interface OrderUpdate {
 
 export interface QuestionOut {
     answerText?: string | null;
+    askerUserIds: number[];
     categoryId?: number | null;
     draftOrder?: number | null;
     eventId: number;
@@ -56,10 +57,10 @@ export interface QuestionCategoryOrderUpdate {
 }
 
 export interface QuestionCategoryOut {
-    id: number;
-    eventId: number;
-    name: string;
-    displayOrder: number;
     createdAt: string;
+    displayOrder: number;
+    eventId: number;
+    id: number;
+    name: string;
     updatedAt: string;
 }

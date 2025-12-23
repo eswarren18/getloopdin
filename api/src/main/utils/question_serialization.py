@@ -1,24 +1,8 @@
 # TODO: Delete?
-from src.main.models import Invite, User
+from src.main.models import Question
 
 
-def serialize_questionout(question, db):
-    # Fetch user info or invite info (i.e., email) if unregistered
-    user = db.query(User).filter(User.id == question.user_id).first()
-    if not user:
-        user = (
-            db.query(Invite).filter(Invite.user_id == question.user_id).first()
-        )
-
-    # Build name attribute
-    if hasattr(user, "first_name") and hasattr(user, "last_name"):
-        name = (
-            f"{user.first_name or ''} {user.last_name or ''}".strip()
-            or user.email
-        )
-    else:
-        name = user.email
-
+def serialize_questionout(question: Question) -> dict:
     return {
         "id": question.id,
         "event_id": question.event_id,
@@ -29,5 +13,5 @@ def serialize_questionout(question, db):
         "published_order": question.published_order,
         "draft_order": question.draft_order,
         "user_id": question.user_id,
-        "user_name": name,
+        "asker_user_ids": [asker.user_id for asker in question.askers],
     }

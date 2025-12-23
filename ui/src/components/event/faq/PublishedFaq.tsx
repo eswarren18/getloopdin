@@ -94,7 +94,10 @@ export function PublishedFaq({ eventId, authUserId }: PublishedFaqProps) {
                                     <div className="flex items-center gap-2">
                                         <span>{q.questionText}</span>
                                         {authUserId &&
-                                            q.userId === authUserId && (
+                                            authUserId &&
+                                            q.askerUserIds.includes(
+                                                authUserId
+                                            ) && (
                                                 <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">
                                                     You asked this
                                                 </span>

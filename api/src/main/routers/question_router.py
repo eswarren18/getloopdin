@@ -81,7 +81,7 @@ def get_questions(
         asc(Question.draft_order),
     ).all()
 
-    return questions
+    return [serialize_questionout(question) for question in questions]
 
 
 @router.post("/events/{event_id}/questions", response_model=QuestionOut)
@@ -233,7 +233,7 @@ def create_question(
 
     db.commit()
     db.refresh(question)
-    return question
+    return serialize_questionout(question)
 
 
 @router.put("/events/{event_id}/questions/order", status_code=204)
@@ -379,7 +379,7 @@ def update_question(
 
     db.commit()
     db.refresh(question)
-    return question
+    return serialize_questionout(question)
 
 
 @router.delete("/events/{event_id}/questions/{question_id}", status_code=204)

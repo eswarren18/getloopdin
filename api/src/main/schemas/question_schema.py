@@ -45,6 +45,7 @@ class QuestionOut(BaseModel):
     published_order: Optional[int] = None
     draft_order: Optional[int] = None
     user_id: Optional[int] = None
+    asker_user_ids: list[int] = []
 
     class Config:
         orm_mode = True
