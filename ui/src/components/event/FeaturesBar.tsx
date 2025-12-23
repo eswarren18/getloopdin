@@ -226,7 +226,7 @@ export function FeaturesBar({ eventId, hosts, authUserId }: FeaturesBarProps) {
                     <Invites eventId={eventId} />
                 )}
             {featureSelection === 'faq' && (
-                <Faq eventId={eventId} authUserId={authUserId} />
+                <Faq eventId={eventId} authUserId={authUserId} hosts={hosts} />
             )}
             {featureSelection === 'chat' && <Chat />}
             {featureSelection === 'packing' && <Packing />}

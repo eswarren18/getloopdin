@@ -38,8 +38,8 @@ export function Participants({ eventId, authUserId }: ParticipantsProps) {
     if (error) return <ErrorDisplay message={error} />;
 
     return (
-        <div className="w-full mt-6 justify-center mx-auto">
-            <h3 className="text-2xl font-bold mb-2">Participants</h3>
+        <div className="w-full mt-6 mx-auto">
+            <h3 className="text-2xl font-bold mb-4">Participants</h3>
             {participants.length === 0 ? (
                 <div>No RSVPs yet!</div>
             ) : (
