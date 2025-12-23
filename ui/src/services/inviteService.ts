@@ -1,9 +1,5 @@
+import { baseUrl } from './authService';
 import { InviteCreate, InviteOut } from '../types';
-
-export const baseUrl = import.meta.env.VITE_API_URL;
-if (!baseUrl) {
-    throw new Error('VITE_API_URL was not defined');
-}
 
 export async function createInvite(
     inviteData: InviteCreate

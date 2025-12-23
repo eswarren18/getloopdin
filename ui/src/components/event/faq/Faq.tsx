@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { EditFaq } from './EditFaq';
 import { PublishedFaq } from './PublishedFaq';
 
@@ -9,6 +11,7 @@ interface FaqProps {
 }
 
 export function Faq({ eventId, authUserId, hosts }: FaqProps) {
+    const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
 
     return (
@@ -45,7 +48,9 @@ export function Faq({ eventId, authUserId, hosts }: FaqProps) {
                         <button
                             className="underline underline-offset-2 decoration-gray-300 hover:decoration-indigo-300 hover:text-indigo-500 transition-colors duration-150 focus:outline-none cursor-pointer px-0 py-0 bg-transparent border-none"
                             style={{ boxShadow: 'none' }}
-                            onClick={() => {}}
+                            onClick={() =>
+                                navigate(`/question-form/${eventId}`)
+                            }
                             type="button"
                         >
                             Ask the host!

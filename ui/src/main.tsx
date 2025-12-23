@@ -6,7 +6,7 @@ import { AuthProvider } from './providers';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { Event, Events, Home, Invites } from './pages';
-import { EventForm, InviteForm, SignIn, SignUp } from './forms';
+import { EventForm, InviteForm, QuestionForm, SignIn, SignUp } from './forms';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
     <StrictMode>
@@ -29,6 +29,10 @@ createRoot(document.getElementById('root') as HTMLElement).render(
                         <Route
                             path="invite-form/:eventId"
                             element={<InviteForm />}
+                        />
+                        <Route
+                            path="question-form/:eventId"
+                            element={<QuestionForm />}
                         />
                     </Route>
                 </Routes>

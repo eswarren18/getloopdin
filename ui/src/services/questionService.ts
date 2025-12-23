@@ -1,9 +1,5 @@
-import { QuestionCategoryOut, QuestionOut } from '../types';
-
-export const baseUrl = import.meta.env.VITE_API_URL;
-if (!baseUrl) {
-    throw new Error('VITE_API_URL was not defined');
-}
+import { baseUrl } from './authService';
+import { QuestionCategoryOut, QuestionCreate, QuestionOut } from '../types';
 
 export async function fetchQuestions(
     eventId: number,
@@ -11,7 +7,6 @@ export async function fetchQuestions(
 ): Promise<QuestionOut[]> {
     try {
         // Send GET request to the API
-        const url = new URL(`${baseUrl}/api/events/${eventId}/questions/`);
         const response = await fetch(
             `${baseUrl}/api/events/${eventId}/questions/`,
             {
@@ -75,6 +70,56 @@ export async function fetchQuestionCategories(
         }));
 
         return categories;
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function createQuestion(
+    eventId: number,
+    questionData: QuestionCreate
+): Promise<QuestionOut> {
+    // Transform payload to snake_case for API consumption
+    const payload = {
+        question_text: questionData.questionText,
+        answer_text: questionData.answerText,
+        category_id: questionData.categoryId,
+        invite_token: questionData.inviteToken,
+        is_published: questionData.isPublished,
+    };
+
+    try {
+        // Send POST request to the API
+        const response = await fetch(
+            `${baseUrl}/api/events/${eventId}/questions/`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+                credentials: 'include',
+            }
+        );
+        if (!response.ok) throw new Error('Failed to create event.');
+
+        // Transform Response object to JSON
+        const data = await response.json();
+
+        // Transform data to camelCase for UI consumption
+        const question: QuestionOut = {
+            answerText: data.answer_text,
+            askerUserIds: data.asker_user_ids ?? [],
+            categoryId: data.category_id,
+            draftOrder: data.draft_order,
+            eventId: data.event_id,
+            id: data.id,
+            isPublished: data.is_published,
+            publishedOrder: data.published_order,
+            questionText: data.question_text,
+            userId: data.user_id,
+        };
+        return question;
     } catch (e) {
         throw e;
     }

@@ -39,6 +39,7 @@ export default function Event() {
     // Page state and hooks
     const location = useLocation();
     const showErrorSuccessAlert = location.state?.showErrorSuccessAlert;
+    const alertMessage = location.state?.alertMessage;
     const navigate = useNavigate();
     const [dataLoading, setDataLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -146,7 +147,7 @@ export default function Event() {
     return (
         <>
             {showErrorSuccessAlert && (
-                <ErrorSuccessAlert message="Invite Sent" type="success" />
+                <ErrorSuccessAlert message={alertMessage} type="success" />
             )}
             {error && <ErrorSuccessAlert message={error} type="error" />}
             <div className="flex bg-gray-50 min-h-full z-10">

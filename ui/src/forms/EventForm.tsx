@@ -44,7 +44,6 @@ export default function EventForm() {
         if (isEdit) {
             setLoading(true);
             const result = await fetchEventById(Number(eventId));
-            console.log('Fetched event for editing:', result);
             setForm({
                 title: result.title ?? '',
                 description: result.description ?? '',

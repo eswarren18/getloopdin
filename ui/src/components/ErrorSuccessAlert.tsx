@@ -75,7 +75,7 @@ export function ErrorSuccessAlert({
 
     return (
         <div
-            className={`fixed bottom-10 left-10 z-50 min-w-[200px] flex items-center gap-3 p-4 rounded-lg border ${colorStyles.border} ${colorStyles.bg} ${colorStyles.text} shadow-md animate-alert-in`}
+            className={`fixed bottom-10 left-10 z-50 min-w-[200px] flex items-center gap-2 p-4 rounded-lg border ${colorStyles.border} ${colorStyles.bg} ${colorStyles.text} shadow-md animate-alert-in`}
             role="alert"
         >
             {iconSvg}
