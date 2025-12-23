@@ -8,7 +8,7 @@ export {
     Packing,
     Polls,
 } from './event';
-export { FaqApp, Question } from './event/faq';
+export { FaqApp } from './event/faq';
 export { ErrorSuccessAlert } from './ErrorSuccessAlert';
 export { LoadingIcon } from './LoadingIcon';
 export { Nav } from './Nav';

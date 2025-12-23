@@ -1,68 +1,94 @@
 import { DndContext } from '@dnd-kit/core';
 import { useState } from 'react';
 
-import { Question } from './Question';
-import { CategorySection } from './CategorySection';
-import { PublishedSection } from './PublishedSection';
+import { QuestionCard } from './QuestionCard';
+import { CategoryContainer } from './CategoryContainer';
 import { DraftSection } from './DraftSection';
 
+export type Question = {
+    id: number;
+    text: string;
+};
+
+export type Category = {
+    id: number;
+    name: string;
+    questions: Question[];
+};
+
 export function FaqApp() {
-    const [categories] = useState([
-        { id: 'cat-1', name: 'Category One' },
-        { id: 'cat-2', name: 'Category Two' },
+    const [categories, setCategories] = useState<Category[]>([
+        {
+            id: 1,
+            name: 'Cat 1',
+            questions: [
+                { id: 101, text: 'Q1' },
+                { id: 102, text: 'Q2' },
+            ],
+        },
+        {
+            id: 2,
+            name: 'Cat 2',
+            questions: [{ id: 103, text: 'Q3' }],
+        },
     ]);
 
-    const [questions, setQuestions] = useState([
-        {
-            id: 'q1',
-            text: 'What is this app?',
-            categoryId: 'cat-1',
-            isPublished: true,
-        },
-        {
-            id: 'q2',
-            text: 'How do I submit a question?',
-            categoryId: null,
-            isPublished: true,
-        },
-        {
-            id: 'q3',
-            text: 'Is this published yet?',
-            categoryId: null,
-            isPublished: false,
-        },
+    const [drafts, setDrafts] = useState<Question[]>([
+        { id: 201, text: 'Draft Q1' },
     ]);
 
     const handleDragEnd = (event: any) => {
+        // Metadata
         // active → what is being dragged (its id, data you attached)
         // over → what it is currently dropped over (the droppable’s id)
         const { active, over } = event;
-
-        // Exit early if no valid drop target
+        // Return early if not dropped over valid target
         if (!over) return;
 
-        setQuestions((prev) =>
-            prev.map((q) => {
-                if (q.id !== active.id) return q;
+        const draggedId = active.id;
+        const targetContainerId = over.data.current?.containerId;
 
-                // Drafts
-                if (over.id === 'drafts') {
-                    return { ...q, isPublished: false, categoryId: null };
-                }
+        let movedQuestion: Question | null = null;
 
-                // Published uncategorized
-                if (over.id === 'published') {
-                    return { ...q, isPublished: true, categoryId: null };
-                }
+        // Find the dragged question
+        categories.forEach((cat) => {
+            const found = cat.questions.find((q) => q.id === draggedId);
+            if (found) movedQuestion = found;
+        });
 
-                // Category
-                return {
-                    ...q,
-                    isPublished: true,
-                    categoryId: over.id,
-                };
-            })
+        if (!movedQuestion) {
+            const foundDraft = drafts.find((q) => q.id === draggedId);
+            if (foundDraft) movedQuestion = foundDraft;
+        }
+
+        if (!movedQuestion) return;
+
+        // Remove from all categories
+        setCategories((prev) =>
+            prev.map((cat) => ({
+                ...cat,
+                questions: cat.questions.filter((q) => q.id !== draggedId),
+            }))
         );
+
+        // Remove from drafts
+        setDrafts((prev) => prev.filter((q) => q.id !== draggedId));
+
+        // Insert into destination
+        if (targetContainerId === 'drafts') {
+            setDrafts((prev) => [...prev, movedQuestion!]);
+        } else {
+            setCategories((prev) =>
+                prev.map((cat) =>
+                    cat.id === targetContainerId
+                        ? {
+                              ...cat,
+                              questions: [...cat.questions, movedQuestion!],
+                          }
+                        : cat
+                )
+            );
+        }
     };
 
     return (
@@ -72,39 +98,18 @@ export function FaqApp() {
             <DndContext onDragEnd={handleDragEnd}>
                 {/* Categories */}
                 {categories.map((cat) => (
-                    <CategorySection key={cat.id} id={cat.id} title={cat.name}>
-                        {questions
-                            .filter(
-                                (q) => q.isPublished && q.categoryId === cat.id
-                            )
-                            .map((q) => (
-                                <Question key={q.id} id={q.id}>
-                                    {q.text}
-                                </Question>
-                            ))}
-                    </CategorySection>
-                ))}
-
-                {/* Published uncategorized */}
-                <PublishedSection>
-                    {questions
-                        .filter((q) => q.isPublished && q.categoryId === null)
-                        .map((q) => (
-                            <Question key={q.id} id={q.id}>
-                                {q.text}
-                            </Question>
+                    <CategoryContainer key={cat.id} category={cat}>
+                        {cat.questions.map((q) => (
+                            <QuestionCard key={q.id} question={q} />
                         ))}
-                </PublishedSection>
+                    </CategoryContainer>
+                ))}
 
                 {/* Drafts */}
                 <DraftSection>
-                    {questions
-                        .filter((q) => !q.isPublished)
-                        .map((q) => (
-                            <Question key={q.id} id={q.id}>
-                                {q.text}
-                            </Question>
-                        ))}
+                    {drafts.map((q) => (
+                        <QuestionCard key={q.id} question={q} />
+                    ))}
                 </DraftSection>
             </DndContext>
         </div>

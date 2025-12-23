@@ -1,16 +1,11 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
-export function Question({
-    id,
-    children,
-}: {
-    id: string;
-    children: React.ReactNode;
-}) {
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
-        id,
-        data: { type: 'question', questionId: id },
+import { Question } from './FaqApp';
+
+export function QuestionCard({ question }: { question: Question }) {
+    const { setNodeRef, listeners, attributes, transform } = useDraggable({
+        id: question.id,
     });
 
     const style = {
@@ -23,9 +18,9 @@ export function Question({
             style={style}
             {...listeners}
             {...attributes}
-            className="p-3 bg-white border rounded shadow cursor-grab"
+            className="border px-3 py-2 mb-2 bg-white cursor-grab"
         >
-            {children}
+            {question.text}
         </div>
     );
 }
