@@ -1,4 +1,9 @@
-import { DndContext } from '@dnd-kit/core';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+    arrayMove,
+} from '@dnd-kit/sortable';
 import { useState } from 'react';
 
 import { QuestionCard } from './QuestionCard';
@@ -37,50 +42,85 @@ export function FaqApp() {
         { id: 201, text: 'Draft Q1' },
     ]);
 
-    const handleDragEnd = (event: any) => {
-        // Metadata
-        // active → what is being dragged (its id, data you attached)
-        // over → what it is currently dropped over (the droppable’s id)
+    const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
-        // Return early if not dropped over valid target
         if (!over) return;
 
-        const draggedId = active.id;
-        const targetContainerId = over.data.current?.containerId;
+        const activeId = active.id;
+        const overId = over.id;
 
+        const sourceContainer = active.data.current?.containerId;
+        const targetContainer = over.data.current?.containerId;
+
+        if (!sourceContainer || !targetContainer) return;
+
+        // Reordering inside the same category
+        if (sourceContainer === targetContainer) {
+            if (sourceContainer === 'drafts') {
+                setDrafts((prev) => {
+                    const oldIndex = prev.findIndex((q) => q.id === activeId);
+                    const newIndex = prev.findIndex((q) => q.id === overId);
+                    return arrayMove(prev, oldIndex, newIndex);
+                });
+            } else {
+                setCategories((prev) =>
+                    prev.map((cat) => {
+                        if (cat.id !== sourceContainer) return cat;
+                        const oldIndex = cat.questions.findIndex(
+                            (q) => q.id === activeId
+                        );
+                        const newIndex = cat.questions.findIndex(
+                            (q) => q.id === overId
+                        );
+                        return {
+                            ...cat,
+                            questions: arrayMove(
+                                cat.questions,
+                                oldIndex,
+                                newIndex
+                            ),
+                        };
+                    })
+                );
+            }
+            return;
+        }
+
+        // Moving between containers
         let movedQuestion: Question | null = null;
 
-        // Find the dragged question
-        categories.forEach((cat) => {
-            const found = cat.questions.find((q) => q.id === draggedId);
-            if (found) movedQuestion = found;
-        });
+        setCategories((prev) =>
+            prev.map((cat) => {
+                const remaining = cat.questions.filter((q) => {
+                    if (q.id === activeId) {
+                        movedQuestion = q;
+                        return false;
+                    }
+                    return true;
+                });
+                return { ...cat, questions: remaining };
+            })
+        );
 
-        if (!movedQuestion) {
-            const foundDraft = drafts.find((q) => q.id === draggedId);
-            if (foundDraft) movedQuestion = foundDraft;
-        }
+        setDrafts((prev) => {
+            const remaining = prev.filter((q) => {
+                if (q.id === activeId) {
+                    movedQuestion = q;
+                    return false;
+                }
+                return true;
+            });
+            return remaining;
+        });
 
         if (!movedQuestion) return;
 
-        // Remove from all categories
-        setCategories((prev) =>
-            prev.map((cat) => ({
-                ...cat,
-                questions: cat.questions.filter((q) => q.id !== draggedId),
-            }))
-        );
-
-        // Remove from drafts
-        setDrafts((prev) => prev.filter((q) => q.id !== draggedId));
-
-        // Insert into destination
-        if (targetContainerId === 'drafts') {
+        if (targetContainer === 'drafts') {
             setDrafts((prev) => [...prev, movedQuestion!]);
         } else {
             setCategories((prev) =>
                 prev.map((cat) =>
-                    cat.id === targetContainerId
+                    cat.id === targetContainer
                         ? {
                               ...cat,
                               questions: [...cat.questions, movedQuestion!],
@@ -95,21 +135,42 @@ export function FaqApp() {
         <div className="max-w-2xl mx-auto mt-8 space-y-6">
             <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
 
-            <DndContext onDragEnd={handleDragEnd}>
+            <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+            >
                 {/* Categories */}
                 {categories.map((cat) => (
                     <CategoryContainer key={cat.id} category={cat}>
-                        {cat.questions.map((q) => (
-                            <QuestionCard key={q.id} question={q} />
-                        ))}
+                        <SortableContext
+                            items={cat.questions.map((q) => q.id)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {cat.questions.map((q) => (
+                                <QuestionCard
+                                    key={q.id}
+                                    question={q}
+                                    containerId={cat.id}
+                                />
+                            ))}
+                        </SortableContext>
                     </CategoryContainer>
                 ))}
 
                 {/* Drafts */}
                 <DraftSection>
-                    {drafts.map((q) => (
-                        <QuestionCard key={q.id} question={q} />
-                    ))}
+                    <SortableContext
+                        items={drafts.map((q) => q.id)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        {drafts.map((q) => (
+                            <QuestionCard
+                                key={q.id}
+                                question={q}
+                                containerId="drafts"
+                            />
+                        ))}
+                    </SortableContext>
                 </DraftSection>
             </DndContext>
         </div>

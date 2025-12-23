@@ -1,24 +1,32 @@
-import { useDraggable } from '@dnd-kit/core';
+import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
 import { Question } from './FaqApp';
 
-export function QuestionCard({ question }: { question: Question }) {
-    const { setNodeRef, listeners, attributes, transform } = useDraggable({
-        id: question.id,
-    });
+export function QuestionCard({
+    question,
+    containerId,
+}: {
+    question: Question;
+    containerId: number | 'drafts';
+}) {
+    const { setNodeRef, attributes, listeners, transform, transition } =
+        useSortable({
+            id: question.id,
+            data: { containerId },
+        });
 
     const style = {
-        transform: CSS.Translate.toString(transform),
+        transform: CSS.Transform.toString(transform),
+        transition,
     };
 
     return (
         <div
             ref={setNodeRef}
             style={style}
-            {...listeners}
             {...attributes}
-            className="border px-3 py-2 mb-2 bg-white cursor-grab"
+            {...listeners}
+            className="border px-3 py-2 mb-2 bg-white cursor-grab rounded"
         >
             {question.text}
         </div>
