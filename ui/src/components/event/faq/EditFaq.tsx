@@ -175,47 +175,43 @@ export function EditFaq({ eventId, authUserId }: EditFaqProps) {
     }
 
     return (
-        <div className="max-w-2xl mx-auto mt-8 space-y-6">
-            <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
-
-            <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-            >
-                {/* Categories */}
-                {categories.map((cat) => (
-                    <CategoryContainer key={cat.id} category={cat}>
-                        <SortableContext
-                            items={cat.questions.map((q) => q.id)}
-                            strategy={verticalListSortingStrategy}
-                        >
-                            {cat.questions.map((q) => (
-                                <QuestionCard
-                                    key={q.id}
-                                    question={q}
-                                    containerId={cat.id}
-                                />
-                            ))}
-                        </SortableContext>
-                    </CategoryContainer>
-                ))}
-
-                {/* Drafts */}
-                <DraftSection>
+        <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+        >
+            {/* Categories */}
+            {categories.map((cat) => (
+                <CategoryContainer key={cat.id} category={cat}>
                     <SortableContext
-                        items={drafts.map((q) => q.id)}
+                        items={cat.questions.map((q) => q.id)}
                         strategy={verticalListSortingStrategy}
                     >
-                        {drafts.map((q) => (
+                        {cat.questions.map((q) => (
                             <QuestionCard
                                 key={q.id}
                                 question={q}
-                                containerId="drafts"
+                                containerId={cat.id}
                             />
                         ))}
                     </SortableContext>
-                </DraftSection>
-            </DndContext>
-        </div>
+                </CategoryContainer>
+            ))}
+
+            {/* Drafts */}
+            <DraftSection>
+                <SortableContext
+                    items={drafts.map((q) => q.id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    {drafts.map((q) => (
+                        <QuestionCard
+                            key={q.id}
+                            question={q}
+                            containerId="drafts"
+                        />
+                    ))}
+                </SortableContext>
+            </DraftSection>
+        </DndContext>
     );
 }

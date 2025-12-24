@@ -1,5 +1,11 @@
 import { baseUrl } from './authService';
-import { QuestionCategoryOut, QuestionCreate, QuestionOut } from '../types';
+import {
+    QuestionCategoryOut,
+    QuestionCreate,
+    QuestionOut,
+    OrderUpdate,
+    QuestionCategoryOrderUpdate,
+} from '../types';
 
 export async function fetchQuestions(
     eventId: number,
@@ -122,5 +128,56 @@ export async function createQuestion(
         return question;
     } catch (e) {
         throw e;
+    }
+}
+
+export async function reorderQuestions(
+    eventId: number,
+    payload: OrderUpdate
+): Promise<void> {
+    const response = await fetch(
+        `${baseUrl}/api/events/${eventId}/questions/order`,
+        {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                items: payload.items.map((i) => ({
+                    question_id: i.questionId,
+                    is_published: i.isPublished,
+                    category_id: i.categoryId,
+                    published_order: i.publishedOrder,
+                    draft_order: i.draftOrder,
+                })),
+            }),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Failed to reorder questions');
+    }
+}
+
+export async function reorderQuestionCategories(
+    eventId: number,
+    payload: QuestionCategoryOrderUpdate
+): Promise<void> {
+    const response = await fetch(
+        `${baseUrl}/api/events/${eventId}/question-categories/order`,
+        {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                items: payload.items.map((i) => ({
+                    category_id: i.categoryId,
+                    display_order: i.displayOrder,
+                })),
+            }),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Failed to reorder categories');
     }
 }
