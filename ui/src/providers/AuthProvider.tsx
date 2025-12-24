@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState, ReactNode } from 'react';
 import { UserResponse } from '../types';
 import { authenticate, signOut as signOutApi } from '../services/authService';
-import { LoadingIcon } from '../components';
 
 interface AuthContextType {
     user: UserResponse | undefined;
@@ -25,6 +24,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [error, setError] = useState<any>();
     const [isLoading, setIsLoading] = useState(true);
 
+    const signOut = async () => {
+        await signOutApi();
+        setUser(undefined);
+    };
+
     // Authenticate user on mount
     useEffect(() => {
         const checkAuth = async () => {
@@ -40,11 +44,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         };
         checkAuth();
     }, []);
-
-    const signOut = async () => {
-        await signOutApi();
-        setUser(undefined);
-    };
 
     return (
         <AuthContext.Provider

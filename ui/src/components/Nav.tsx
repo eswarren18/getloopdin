@@ -134,7 +134,10 @@ export function Nav({ setSidebarCollapsed }: NavProps) {
                                     </button>
                                     <button
                                         className="w-full text-left px-4 py-2 hover:bg-cyan-50"
-                                        onClick={signOut}
+                                        onClick={() => {
+                                            if (signOut) signOut();
+                                            setDropdownOpen(false);
+                                        }}
                                     >
                                         Sign Out
                                     </button>
