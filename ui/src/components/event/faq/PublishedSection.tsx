@@ -3,7 +3,7 @@ import { useDroppable } from '@dnd-kit/core';
 export function PublishedSection({ children }: { children?: React.ReactNode }) {
     const { setNodeRef, isOver } = useDroppable({
         id: 'published',
-        data: { type: 'published' },
+        data: { containerId: 'published' },
     });
 
     return (

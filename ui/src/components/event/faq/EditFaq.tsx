@@ -6,7 +6,12 @@ import {
 } from '@dnd-kit/sortable';
 import { useState } from 'react';
 
-import { CategoryContainer, DraftSection, QuestionCard } from './';
+import {
+    CategoryContainer,
+    DraftSection,
+    PublishedSection,
+    QuestionCard,
+} from './';
 
 export type Question = {
     id: number;
@@ -44,6 +49,7 @@ export function EditFaq({ eventId, authUserId }: EditFaqProps) {
     const [drafts, setDrafts] = useState<Question[]>([
         { id: 201, text: 'Draft Q1' },
     ]);
+    const [publishedOther, setPublishedOther] = useState<Question[]>([]);
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
@@ -57,10 +63,16 @@ export function EditFaq({ eventId, authUserId }: EditFaqProps) {
 
         if (!sourceContainer || !targetContainer) return;
 
-        // Reordering inside the same category
+        // Reordering inside the same container
         if (sourceContainer === targetContainer) {
             if (sourceContainer === 'drafts') {
                 setDrafts((prev) => {
+                    const oldIndex = prev.findIndex((q) => q.id === activeId);
+                    const newIndex = prev.findIndex((q) => q.id === overId);
+                    return arrayMove(prev, oldIndex, newIndex);
+                });
+            } else if (sourceContainer === 'published') {
+                setPublishedOther((prev) => {
                     const oldIndex = prev.findIndex((q) => q.id === activeId);
                     const newIndex = prev.findIndex((q) => q.id === overId);
                     return arrayMove(prev, oldIndex, newIndex);
@@ -92,11 +104,14 @@ export function EditFaq({ eventId, authUserId }: EditFaqProps) {
         // Moving between containers
         let movedQuestion: Question | null = null;
 
+        // Remove from all containers and get the moved question
+        let found: Question | null = null;
+
         setCategories((prev) =>
             prev.map((cat) => {
                 const remaining = cat.questions.filter((q) => {
                     if (q.id === activeId) {
-                        movedQuestion = q;
+                        found = q;
                         return false;
                     }
                     return true;
@@ -108,7 +123,7 @@ export function EditFaq({ eventId, authUserId }: EditFaqProps) {
         setDrafts((prev) => {
             const remaining = prev.filter((q) => {
                 if (q.id === activeId) {
-                    movedQuestion = q;
+                    found = q;
                     return false;
                 }
                 return true;
@@ -116,22 +131,37 @@ export function EditFaq({ eventId, authUserId }: EditFaqProps) {
             return remaining;
         });
 
-        if (!movedQuestion) return;
+        setPublishedOther((prev) => {
+            const remaining = prev.filter((q) => {
+                if (q.id === activeId) {
+                    found = q;
+                    return false;
+                }
+                return true;
+            });
+            return remaining;
+        });
 
-        if (targetContainer === 'drafts') {
-            setDrafts((prev) => [...prev, movedQuestion!]);
-        } else {
-            setCategories((prev) =>
-                prev.map((cat) =>
-                    cat.id === targetContainer
-                        ? {
-                              ...cat,
-                              questions: [...cat.questions, movedQuestion!],
-                          }
-                        : cat
-                )
-            );
-        }
+        // Use a timeout to ensure state updates above are applied before adding to new container
+        setTimeout(() => {
+            if (!found) return;
+            if (targetContainer === 'drafts') {
+                setDrafts((prev) => [...prev, found!]);
+            } else if (targetContainer === 'published') {
+                setPublishedOther((prev) => [...prev, found!]);
+            } else {
+                setCategories((prev) =>
+                    prev.map((cat) =>
+                        cat.id === targetContainer
+                            ? {
+                                  ...cat,
+                                  questions: [...cat.questions, found!],
+                              }
+                            : cat
+                    )
+                );
+            }
+        }, 0);
     };
 
     function buildQuestionOrderPayload(
@@ -196,6 +226,21 @@ export function EditFaq({ eventId, authUserId }: EditFaqProps) {
                     </SortableContext>
                 </CategoryContainer>
             ))}
+            {/* Other */}
+            <PublishedSection>
+                <SortableContext
+                    items={publishedOther.map((q) => q.id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    {publishedOther.map((q) => (
+                        <QuestionCard
+                            key={q.id}
+                            question={q}
+                            containerId="published"
+                        />
+                    ))}
+                </SortableContext>
+            </PublishedSection>
 
             {/* Drafts */}
             <DraftSection>

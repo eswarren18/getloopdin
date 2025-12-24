@@ -7,7 +7,7 @@ export function QuestionCard({
     containerId,
 }: {
     question: Question;
-    containerId: number | 'drafts';
+    containerId: number | 'published' | 'drafts';
 }) {
     const { setNodeRef, attributes, listeners, transform, transition } =
         useSortable({

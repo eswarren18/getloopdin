@@ -9,7 +9,7 @@ export function CategoryContainer({
     children: React.ReactNode;
 }) {
     const { setNodeRef, isOver } = useDroppable({
-        id: `category-${category.id}`,
+        id: category.id,
         data: { containerId: category.id },
     });
 
