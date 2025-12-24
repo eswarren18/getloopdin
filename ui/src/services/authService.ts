@@ -8,7 +8,7 @@ if (!baseUrl) {
 export async function authenticate(): Promise<UserResponse> {
     try {
         // Send GET request to the API
-        const response = await fetch(`${baseUrl}/api/users/me`, {
+        const response = await fetch(`${baseUrl}/api/auth/me`, {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export async function authenticate(): Promise<UserResponse> {
             email: data.email,
             firstName: data.first_name,
             lastName: data.last_name,
-            isRegistered: data.isRegistered ?? true,
+            isRegistered: data.is_registered ?? true,
         };
 
         return user;

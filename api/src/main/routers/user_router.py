@@ -78,20 +78,6 @@ def create_user(
     return set_jwt_cookie_response(user_obj, response_model=UserResponse)
 
 
-@router.get("/me", response_model=UserResponse)
-def get_current_user(user: User = Depends(get_current_user_from_token)):
-    """
-    Get the current user from the JWT token in the cookie.
-
-    Args:
-        user (User): Current authenticated user from token.
-
-    Returns:
-        UserResponse: The current user details.
-    """
-    return user
-
-
 @router.delete("/me", status_code=204)
 def delete_current_user(
     db: Session = Depends(get_db),
@@ -115,24 +101,3 @@ def delete_current_user(
     # Delete the current user from the database. Commit changes.
     db.delete(user)
     db.commit()
-
-
-@router.get("/{user_id}", response_model=UserResponse)
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    """
-    Get user details by user_id.
-
-    Args:
-        user_id (int): ID of the user to fetch.
-        db (Session): Database session.
-
-    Returns:
-        UserResponse: The user details if found.
-
-    Raises:
-        HTTPException: If user not found.
-    """
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user

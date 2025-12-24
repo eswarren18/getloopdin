@@ -14,7 +14,11 @@ from sqlalchemy.orm import Session
 from src.main.database import get_db
 from src.main.models import User
 from src.main.schemas import UserRequest, UserResponse
-from src.main.utils import set_jwt_cookie_response, verify_password
+from src.main.utils import (
+    get_current_user_from_token,
+    set_jwt_cookie_response,
+    verify_password,
+)
 
 router = APIRouter(tags=["Authentication"], prefix="/api/auth")
 
@@ -79,3 +83,17 @@ def signout(request: Request, response: Response):
     )
 
     return {"detail": "User has been signed out"}
+
+
+@router.get("/me", response_model=UserResponse)
+def auth_user(user: User = Depends(get_current_user_from_token)):
+    """
+    Get the current user from the JWT token in the cookie.
+
+    Args:
+        user (User): Current authenticated user from token.
+
+    Returns:
+        UserResponse: The current user details.
+    """
+    return user
