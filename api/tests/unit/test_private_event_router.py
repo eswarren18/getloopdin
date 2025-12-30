@@ -142,6 +142,7 @@ def test_create_event_success():
     # --- Arrange ---
     # Set event details
     json = {
+        "address": "string",
         "description": "string",
         "end_time": "2025-12-14T22:19:13.855Z",
         "start_time": "2025-12-14T22:19:13.855Z",
@@ -173,6 +174,7 @@ def test_create_event_adds_user_to_participant_success():
     # --- Arrange ---
     # Set event details
     json = {
+        "address": "string",
         "description": "string",
         "end_time": "2025-12-14T22:19:13.855Z",
         "start_time": "2025-12-14T22:19:13.855Z",
@@ -198,8 +200,8 @@ def test_create_event_adds_user_to_participant_success():
     assert response.status_code == 200
     # Check that the participant was added with correct event_id, user_id, and role
     assert any(
-        p.event_id == event_id and p.user_id == 1 and p.role == "host"
-        for p in mock_db._participants
+        participant.event_id == event_id and participant.user_id == 1 and participant.role == "host"
+        for participant in mock_db._participants
     )
 
 
@@ -207,6 +209,7 @@ def test_create_event_missing_fields():
     # --- Arrange ---
     # Set event details
     json = {
+        "address": "string",
         "description": "string",
         "end_time": "2025-12-14T22:19:13.855Z",
         "start_time": "2025-12-14T22:19:13.855Z"
