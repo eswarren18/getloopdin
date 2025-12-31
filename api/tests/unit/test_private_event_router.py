@@ -18,17 +18,56 @@ client = TestClient(app)
 class MockEvent:
     def __init__(
         self,
-        id=1,
-        title="Mock Event",
+        address="123 Main",
         description="Mock event for testing",
-        start_time="2025-11-25T22:17:41.110000Z",
         end_time="2025-11-26T22:17:41.110000Z",
+        id=1,
+        start_time="2025-11-25T22:17:41.110000Z",
+        title="Mock Event",
     ):
-        self.id = id
-        self.title = title
+        self.address = address
         self.description = description
-        self.start_time = start_time
         self.end_time = end_time
+        self.id = id
+        self.start_time = start_time
+        self.title = title
+
+
+class MockEventQuery:
+    def __init__(self, events):
+        self._events = events
+        self._filters = []
+        self._order_by = None
+
+    def all(self):
+        return self._events
+
+    def filter(self, *args):
+        filtered = self._events
+        for arg in args:
+            # Only handle Event.id.in_(event_ids) and Event.start_time > now, etc.
+            if hasattr(arg, 'left') and hasattr(arg, 'comparator'):
+                left = arg.left
+                comparator = arg.comparator
+                right = arg.right if hasattr(arg, 'right') else None
+                # Handle Event.id.in_(event_ids)
+                if getattr(left, 'name', None) == 'id' and hasattr(right, '__iter__'):
+                    filtered = [e for e in filtered if e.id in list(right)]
+                # Handle Event.start_time > now
+                elif getattr(left, 'name', None) == 'start_time' and comparator == '>':
+                    filtered = [e for e in filtered if e.start_time > right]
+                # Handle Event.end_time < now
+                elif getattr(left, 'name', None) == 'end_time' and comparator == '<':
+                    filtered = [e for e in filtered if e.end_time < right]
+        return MockEventQuery(filtered)
+
+    def first(self):
+        return self._events[0] if self._events else None
+
+    def order_by(self, *args):
+        # Only support ordering by Event.start_time ascending
+        ordered = sorted(self._events, key=lambda e: e.start_time)
+        return MockEventQuery(ordered)
 
 
 class MockEventIdSubquery:
@@ -64,7 +103,7 @@ class MockParticipantQuery:
         return MockParticipantQuery(filtered)
 
     def subquery(self):
-        # Return a mock subquery object with .select() returning event_ids
+        # Only return event_ids from the filtered participants (self._participants)
         return MockEventIdSubquery([p.event_id for p in self._participants])
 
     def select(self):
@@ -99,15 +138,13 @@ class MockSession:
     def query(self, model):
         if hasattr(model, "__name__"):
             if model.__name__ == "Event":
-                return MockEventIdSubquery(self._events)
+                return MockEventQuery(self._events)
             elif model.__name__ == "User":
                 return MockUserQuery(self._users)
             elif model.__name__ == "Participant":
                 return MockParticipantQuery(self._participants)
-        # Handle SQLAlchemy columns (like Participant.event_id)
         elif hasattr(model, "class_") and model.class_.__name__ == "Participant":
             return MockParticipantQuery(self._participants)
-        # Add more as needed
 
 
 class MockUser:
@@ -236,23 +273,50 @@ def test_create_event_missing_fields():
     assert any("title" in err["loc"] for err in data["detail"])
 
 
-# def test_create_event_unauthenticated():
-#     # TODO: add test
-#     pass
+def test_create_event_unauthenticated():
+    # --- Arrange ---
+    # Set event details
+    json = {
+        "address": "string",
+        "description": "string",
+        "end_time": "2025-12-14T22:19:13.855Z",
+        "start_time": "2025-12-14T22:19:13.855Z",
+        "title": "string"
+    }
+
+    # Override dependencies
+    global mock_db
+    mock_db = MockSession()
+    app.dependency_overrides[get_db] = mock_get_db
+
+    # --- Act ---
+    response = client.post("/api/private/events/", json=json)
+
+    # --- Clean-up ---
+    app.dependency_overrides = {}
+
+    # --- Assert ---
+    assert response.status_code == 401
+    data = response.json()
+    assert data["detail"] == "Not logged in"
 
 
 # def test_get_events_host_success():
 #     # --- Arrange ---
+#     # Set query details
+#     role = "host"
+#     time = "all"
+
+#     # Override dependencies
 #     global mock_db
 #     mock_events = [
 #         MockEvent(id=1, title="Event 1"),
 #         MockEvent(id=2, title="Event 2"),
 #         MockEvent(id=3, title="Event 3"),
 #     ]
-
 #     mock_participants = [
 #         MockParticipant(event_id=1, user_id=1, role="host"),
-#         MockParticipant(event_id=2, user_id=1, role="host"),
+#         MockParticipant(event_id=2, user_id=1, role="participant"),
 #         MockParticipant(event_id=3, user_id=2, role="host"),
 #     ]
 #     mock_db = MockSession(events=mock_events, participants=mock_participants)
@@ -262,7 +326,7 @@ def test_create_event_missing_fields():
 #     app.dependency_overrides[get_db] = mock_get_db
 
 #     # --- Act ---
-#     response = client.get("/api/private/events/?role=host&time=all")
+#     response = client.get(f"/api/private/events/?role={role}&time={time}")
 
 #     # --- Clean-up ---
 #     app.dependency_overrides = {}
@@ -270,52 +334,13 @@ def test_create_event_missing_fields():
 #     # --- Assert ---
 #     assert response.status_code == 200
 #     data = response.json()
-#     assert len(data) == 2
+#     assert len(data) == 1
 #     returned_ids = {event["id"] for event in data}
-#     assert returned_ids == {1, 2}
+#     assert returned_ids == {1}
 
 
 # def test_create_event_success():
-#     # Arrange
-#     mock_event = MockEvent()
-#     mock_db = MockSession(events=[mock_event])
-
-#     def mock_get_current_user_from_token():
-#         return MockUser()
-
-#     def mock_get_db():
-#         return mock_db
-
-#     app.dependency_overrides[get_current_user_from_token] = mock_get_current_user_from_token
-#     app.dependency_overrides[get_db] = mock_get_db
-
-#     json = {
-#         "title": "Test",
-#         "description": "This is a test event.",
-#         "host_id": 1,
-#         "start_time": "2025-11-25T22:17:41.110Z",
-#         "end_time": "2025-11-26T22:17:41.110Z"
-#     }
-
-#     # Act
-#     response = client.post("api/events/", json=json)
-
-#     # Clean-up
-#     app.dependency_overrides = {}
-
-#     # Assert
-#     assert response.status_code == 200
-#     data = response.json()
-#     assert data == {
-#         "title": "Test",
-#         "description": "This is a tests event.",
-#         "host_id": 0,
-#         "start_time": "2025-11-25T22:17:41.110Z",
-#         "end_time": "2025-11-26T22:17:41.110Z",
-#         "id": 1,
-#         "host_name": "Test User"
-#     }
-
+#     # TODO: add test
 
 # def test_get_events_participant_success():
 #     # TODO: add test
