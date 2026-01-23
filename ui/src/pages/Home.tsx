@@ -17,7 +17,7 @@ export default function Home() {
             <section className="flex flex-col items-center justify-center px-6 pt-32 pb-24 text-center">
                 {/* Placeholder Logo / Illustration */}
                 <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-2xl bg-gray-200">
-                    <span className="text-sm text-gray-500">SVG</span>
+                    <span className="text-sm text-gray-500">Loopd In</span>
                 </div>
 
                 <h1 className="max-w-3xl text-5xl font-bold leading-tight">

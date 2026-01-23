@@ -68,6 +68,7 @@ export default function Events() {
                                 Create Event
                             </button>
                         </div>
+
                         <div className="flex justify-center gap-4">
                             <div className="flex bg-gray-100 rounded-xl shadow p-1">
                                 <button

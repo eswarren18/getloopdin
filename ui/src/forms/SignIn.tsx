@@ -48,7 +48,7 @@ export default function SignIn() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex flex-col w-3/10 mx-auto my-8"
+            className="flex flex-col w-3/5 mx-auto my-8 sm:w-1/2 md:w-2/5 lg:w-3/10 xl:w-1/5"
         >
             <h1 className="font-bold text-2xl mb-1">Welcome Back!</h1>
             <p className="text-sm font-normal text-gray-600 mb-4">Sign In</p>
@@ -109,7 +109,7 @@ export default function SignIn() {
                 />
             </div>
             {error && <ErrorDisplay message={error} />}
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
                 <button
                     type="button"
                     className="basis-1/2 bg-gray-200 px-3 py-1 rounded font-medium hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200 cursor-pointer"

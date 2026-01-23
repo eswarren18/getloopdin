@@ -62,7 +62,7 @@ export default function InviteForm() {
         <div className="flex min-h-screen bg-gray-50">
             <form
                 onSubmit={handleSubmit}
-                className="flex flex-col w-3/10 mx-auto my-8"
+                className="flex flex-col w-3/5 mx-auto my-8 sm:w-1/2 md:w-2/5 lg:w-3/10"
             >
                 <h1 className="font-bold text-2xl mb-1">Invite a friend!</h1>
                 <p className="text-sm font-normal text-gray-600 mb-4">
@@ -96,7 +96,7 @@ export default function InviteForm() {
                         value={form.email}
                     />
                 </div>
-                <div className="flex items-center border-2 py-2 px-3 rounded border-black text-gray-400">
+                <div className="flex items-center border-2 py-2 px-3 rounded border-black text-gray-400 mb-3">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -128,7 +128,7 @@ export default function InviteForm() {
                     </select>
                 </div>
                 {error && <ErrorDisplay message={error} className="my-2" />}
-                <div className="flex gap-4 mt-4">
+                <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
                     <button
                         type="button"
                         className="basis-1/2 bg-gray-200 px-3 py-1 rounded font-medium hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200 cursor-pointer"
