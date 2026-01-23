@@ -112,58 +112,64 @@ export default function Events() {
                                 No events found.
                             </div>
                         ) : (
-                            <table className="w-full bg-white rounded-lg shadow-sm">
-                                <thead>
-                                    <tr className="bg-gray-100 text-left">
-                                        <th className="py-2 px-4 w-3/5">
-                                            Title
-                                        </th>
-                                        <th className="py-2 px-4 w-2/5">
-                                            Date
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {events.map((event) => (
-                                        <tr
-                                            key={event.id}
-                                            className="border-b last:border-b-0 border-gray-200 hover:bg-gray-50 transition-colors"
-                                        >
-                                            <td className="py-2 px-4">
-                                                <button
-                                                    className="cursor-pointer hover:text-cyan-500 text-left w-full"
-                                                    onClick={() => {
-                                                        navigate(
-                                                            `/events/${event.id}`,
-                                                            {
-                                                                state: {
-                                                                    from: '/events',
-                                                                },
-                                                            }
-                                                        );
-                                                    }}
-                                                >
+                            <div
+                                id="event-cards"
+                                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full"
+                            >
+                                {events.map((event) => (
+                                    <button
+                                        key={event.id}
+                                        className="flex flex-col relative text-cyan-900 bg-white rounded-lg shadow-md transform hover:bg-cyan-50 hover:scale-105 hover:ring-2 hover:ring-cyan-500 transition-all duration-200 min-h-48 overflow-hidden"
+                                        onClick={() => {
+                                            navigate(`/events/${event.id}`, {
+                                                state: {
+                                                    from: '/events',
+                                                },
+                                            });
+                                        }}
+                                    >
+                                        <div className="flex flex-col justify-between h-full w-full p-4">
+                                            <div>
+                                                <h1 className="font-bold text-lg mb-1 text-cyan-700 truncate">
                                                     {event.title}
-                                                </button>
-                                            </td>
-                                            <td className="py-2 px-4 border-l border-gray-200">
-                                                {event.startTime
-                                                    ? new Date(
-                                                          event.startTime
-                                                      ).toLocaleDateString(
-                                                          'en-US',
-                                                          {
-                                                              month: 'short',
-                                                              day: 'numeric',
-                                                              year: 'numeric',
-                                                          }
-                                                      )
-                                                    : ''}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                                </h1>
+                                                {event.description ? (
+                                                    <p className="text-sm text-gray-500 mb-2 line-clamp-3">
+                                                        {event.description
+                                                            .length > 100
+                                                            ? event.description.slice(
+                                                                  0,
+                                                                  100
+                                                              ) + '...'
+                                                            : event.description}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-sm text-gray-400 mb-2 italic">
+                                                        No event description
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div className="border-t border-cyan-300 w-3/4 mx-auto mt-2 justify-center"></div>
+                                            <div className="mt-auto flex items-center gap-2">
+                                                <span className="text-xs text-gray-400 font-medium">
+                                                    {event.startTime
+                                                        ? new Date(
+                                                              event.startTime
+                                                          ).toLocaleDateString(
+                                                              'en-US',
+                                                              {
+                                                                  month: 'short',
+                                                                  day: 'numeric',
+                                                                  year: 'numeric',
+                                                              }
+                                                          )
+                                                        : ''}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>
