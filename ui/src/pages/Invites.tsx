@@ -69,7 +69,7 @@ export default function Invites() {
         <>
             {error && <ErrorSuccessAlert message={error} type="error" />}
             <div className="flex bg-gray-50 min-h-full z-10">
-                <div className="flex flex-col gap-4 w-4/5 mx-auto mt-8">
+                <div className="flex flex-col gap-4 w-9/10 mx-auto mt-8 lg:w-7/10">
                     <h2 className="text-2xl font-bold mt-4 mb-2">Invites</h2>
                     {invites.length === 0 ? (
                         <div>No invites found.</div>

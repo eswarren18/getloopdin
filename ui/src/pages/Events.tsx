@@ -55,7 +55,7 @@ export default function Events() {
         <>
             {error && <ErrorSuccessAlert message={error} type="error" />}
             <div className="flex bg-gray-50 min-h-full z-10">
-                <div className="w-5/6 mx-auto mt-8">
+                <div className="w-5/6 mx-auto mt-8 lg:w-2/3 xl:w-1/2">
                     <div className="flex flex-col gap-4 mt-4 mb-6">
                         <div className="flex justify-between items-center">
                             <h2 className="text-2xl font-bold text-center">
@@ -115,8 +115,12 @@ export default function Events() {
                             <table className="w-full bg-white rounded-lg shadow-sm">
                                 <thead>
                                     <tr className="bg-gray-100 text-left">
-                                        <th className="py-2 px-4">Title</th>
-                                        <th className="py-2 px-4">Date</th>
+                                        <th className="py-2 px-4 w-3/5">
+                                            Title
+                                        </th>
+                                        <th className="py-2 px-4 w-2/5">
+                                            Date
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
