@@ -69,7 +69,7 @@ export default function Events() {
                             </button>
                         </div>
 
-                        <div className="flex justify-center gap-4">
+                        <div className="flex flex-col items-center justify-center gap-4 md:flex-row">
                             <div className="flex bg-gray-100 rounded-xl shadow p-1">
                                 <button
                                     className={`px-4 py-1 rounded-l-lg font-medium transition-colors duration-150 ${roleFilter === 'participant' ? 'bg-cyan-500 text-white' : 'bg-gray-50 text-gray-700'}`}
